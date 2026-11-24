@@ -20,9 +20,8 @@ and a recipe journal.
 | `frontend/` | React + TypeScript app                    |
 | `nginx/`    | Reverse proxy configuration               |
 
-The Django skeleton lives in `backend/`. The React skeleton and the
-Docker Compose setup are added by the next Sprint 0 tickets (FC-003 and
-FC-004).
+The Django skeleton lives in `backend/` and the React skeleton in
+`frontend/`. The Docker Compose setup is added by FC-004.
 
 ## Getting started
 
@@ -70,6 +69,22 @@ need from `.env.example` first. `GET /api/health/` reports the database
 and Redis status; the Swagger UI is at `/api/docs/`. Run the tests with
 `pytest` from the `backend/` folder; they do not need PostgreSQL or
 Redis.
+
+## Frontend without Docker
+
+Install Node.js 20, start the backend as above, then:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The app opens at http://localhost:5173 and shows the result of
+`/api/health/`. It calls the backend at `VITE_API_URL` from the root
+`.env` (default in `.env.example`: `http://localhost:8000`). Every UI
+string lives in `frontend/src/i18n/uk.json`. Checks: `npm run
+typecheck`, `npm test` and `npm run build`.
 
 ## Contributing
 

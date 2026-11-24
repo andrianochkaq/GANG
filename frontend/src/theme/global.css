@@ -1,0 +1,22 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* From docs/design-system/components.css */
+body { margin: 0; font-family: var(--font-text); color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
+.fc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.fc-card { box-sizing: border-box; background: var(--surface); border-radius: var(--radius-card); padding: var(--space-14) var(--space-16); display: flex; flex-direction: column; gap: var(--space-10); }
+.fc-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); }
+.fc-card__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 1.25; }
+.fc-header__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 22px; line-height: 1.15; }
+
+/* App skeleton screen: tab-root frame (02-layout-and-screens.md) */
+.fc-page { box-sizing: border-box; min-height: 100vh; max-width: var(--size-phone); margin: 0 auto; padding: var(--space-16) var(--space-20); display: flex; flex-direction: column; gap: var(--space-12); }
+.fc-health__meta { margin: 0; font-size: 13px; line-height: 1.4; color: var(--text-muted); }
+.fc-health__row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-8); padding: var(--space-10) 0; border-top: 1px solid var(--divider); font-size: 15px; line-height: 1.4; }
+.fc-health__value { font-weight: 600; color: var(--ink); }
+.fc-health__value--error { color: var(--danger); }
+.fc-health__error { margin: 0; font-size: 14px; line-height: 1.4; font-weight: 600; color: var(--danger); }
+.fc-skeleton { background: var(--soft); border-radius: var(--radius-card); height: 132px; }
