@@ -1,0 +1,20 @@
+{
+  "app": {
+    "name": "FreeCook"
+  },
+  "health": {
+    "title": "Стан сервера",
+    "subtitle": "Відповідь /api/health/",
+    "database": "База даних",
+    "redis": "Redis",
+    "statusOk": "працює",
+    "statusError": "не відповідає",
+    "loading": "Перевіряємо сервер…",
+    "loadError": "Не вдалося зв’язатися з сервером. Перевірте, чи запущено бекенд, і оновіть сторінку."
+  },
+  "recipes": {
+    "cooked": "Страву приготовано",
+    "cooked_female": "Я приготувала",
+    "cooked_male": "Я приготував"
+  }
+}

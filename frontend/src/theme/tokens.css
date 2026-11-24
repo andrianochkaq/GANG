@@ -1,0 +1,39 @@
+/* Design tokens used by the app skeleton, copied by name and value from
+   docs/design-system/tokens.json (theme «Білий»). FC-006 replaces this
+   file with the full token set and the runtime theme formula. */
+:root {
+  --bg: #f7f5f0;
+  --soft: #ece8e0;
+  --line: #e4dfd5;
+  --accent: #2f2e2b;
+  --ink: #2f2e2b;
+  --surface: #ffffff;
+  --text: #262523;
+  --text-secondary: #3f3d39;
+  --text-muted: #4a4844;
+  --text-subtle: #5c5a55;
+  --divider: #efebe3;
+  --danger: #a2321f;
+
+  --font-display: "Rubik", Arial, sans-serif;
+  --font-text: "Inter", Arial, sans-serif;
+
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-40: 40px;
+
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-card: 22px;
+  --radius-pill: 999px;
+
+  --size-phone: 390px;
+}
