@@ -20,9 +20,9 @@ and a recipe journal.
 | `frontend/` | React + TypeScript app                    |
 | `nginx/`    | Reverse proxy configuration               |
 
-The folders are created empty. The Django skeleton, the React skeleton
-and the Docker Compose setup are added by the next Sprint 0 tickets
-(FC-002, FC-003 and FC-004).
+The Django skeleton lives in `backend/`. The React skeleton and the
+Docker Compose setup are added by the next Sprint 0 tickets (FC-003 and
+FC-004).
 
 ## Getting started
 
@@ -52,6 +52,24 @@ and the Docker Compose setup are added by the next Sprint 0 tickets
 
    This command works once FC-004 is merged. It starts the Django API,
    the React app, PostgreSQL, Redis and Celery.
+
+## Backend without Docker
+
+Run PostgreSQL 16 and Redis locally, then from the repository root:
+
+```bash
+python -m venv .venv
+source .venv/Scripts/activate   # Windows Git Bash; use .venv/bin/activate elsewhere
+pip install -r backend/requirements.txt
+cd backend
+python manage.py runserver
+```
+
+The variables are read from the environment, so export the ones you
+need from `.env.example` first. `GET /api/health/` reports the database
+and Redis status; the Swagger UI is at `/api/docs/`. Run the tests with
+`pytest` from the `backend/` folder; they do not need PostgreSQL or
+Redis.
 
 ## Contributing
 
