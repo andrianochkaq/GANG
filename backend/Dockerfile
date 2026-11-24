@@ -1,4 +1,5 @@
 # Development image for the Django API, Celery worker and Celery beat.
+# It includes the lint tools, so scripts/test.sh can run them in the container.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -11,8 +12,8 @@ RUN groupadd --gid 1000 app \
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install -r requirements.txt -r requirements-dev.txt
 
 # The entrypoint lives outside /app so the source bind mount of the
 # development compose file does not hide it.

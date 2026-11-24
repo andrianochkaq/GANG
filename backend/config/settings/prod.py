@@ -1,4 +1,5 @@
 """Production settings. Every secret must come from the environment."""
+
 from .base import *  # noqa: F403
 from .base import SIMPLE_JWT, read_env_list, require_env
 

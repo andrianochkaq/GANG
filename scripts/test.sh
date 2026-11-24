@@ -10,13 +10,13 @@ if [ -f docker-compose.yml ] && command -v docker >/dev/null 2>&1; then
   if [ -f backend/requirements.txt ]; then
     echo "== backend: lint + tests"
     docker compose run --rm backend sh -c \
-      "(command -v ruff >/dev/null && ruff check . || true) && python manage.py makemigrations --check --dry-run && (command -v pytest >/dev/null && pytest -q || python manage.py test)"
+      "ruff check . && black --check . && python manage.py makemigrations --check --dry-run && pytest -q"
     ran=1
   fi
   if [ -f frontend/package.json ]; then
     echo "== frontend: lint + tests + build"
     docker compose run --rm frontend sh -c \
-      "npm run lint --if-present && npm run typecheck --if-present && CI=true npm run test --if-present && npm run build --if-present"
+      "npm run lint --if-present && npm run format:check --if-present && npm run typecheck --if-present && CI=true npm run test --if-present && npm run build --if-present"
     ran=1
   fi
 elif [ -f docker-compose.yml ]; then

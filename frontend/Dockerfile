@@ -6,7 +6,10 @@ RUN chown node:node /app
 USER node
 
 COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci
+# npm ci fails while package-lock.json lacks the lint tools added by
+# FC-005; npm install then fills the gap. Use plain npm ci once the lock
+# file is regenerated.
+RUN npm ci || npm install
 
 COPY --chown=node:node . .
 

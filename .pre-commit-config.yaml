@@ -1,0 +1,42 @@
+# Install once with:  pip install pre-commit && pre-commit install
+# Run on every file with:  pre-commit run --all-files
+# The ruff and black versions match backend/requirements-dev.txt.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^backend/
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        files: ^backend/
+
+  # The frontend hooks use the tools from frontend/node_modules, so run
+  # `npm install` in frontend/ once.
+  - repo: local
+    hooks:
+      - id: frontend-eslint
+        name: eslint
+        entry: npm --prefix frontend run lint
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+      - id: frontend-prettier
+        name: prettier
+        entry: npm --prefix frontend run format:check
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false

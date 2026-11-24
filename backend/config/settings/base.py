@@ -3,6 +3,7 @@
 Everything that differs between environments is read from environment
 variables. The variable names are listed in ``.env.example``.
 """
+
 import os
 from pathlib import Path
 
