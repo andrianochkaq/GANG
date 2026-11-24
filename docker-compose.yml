@@ -1,0 +1,137 @@
+# Development stack: `docker compose up --build` starts everything.
+#
+# - API:      http://localhost:8000  (Swagger UI at /api/docs/)
+# - App:      http://localhost:5173
+# - Mailpit:  http://localhost:8025  (catches every email the API sends)
+#
+# Values from the root .env are used when the file exists; the defaults
+# below make the stack start without it. PostgreSQL and Redis are not
+# published to the host, use `docker compose exec db psql -U freecook`.
+name: freecook
+
+x-backend-build: &backend-build
+  context: ./backend
+
+x-backend-env-file: &backend-env-file
+  - path: .env
+    required: false
+
+x-backend-environment: &backend-environment
+  DJANGO_SETTINGS_MODULE: config.settings.dev
+  POSTGRES_HOST: db
+  POSTGRES_PORT: "5432"
+  REDIS_URL: redis://redis:6379/0
+  # Outgoing email goes to Mailpit, never to a real SMTP server.
+  SMTP_HOST: mailpit
+  SMTP_PORT: "1025"
+  SMTP_USE_TLS: "false"
+  SMTP_USER: ""
+  SMTP_PASSWORD: ""
+
+x-backend-depends-on: &backend-depends-on
+  db:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  mailpit:
+    condition: service_started
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-freecook}
+      POSTGRES_USER: ${POSTGRES_USER:-freecook}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      # Development only: the database is reachable on the private Docker
+      # network alone, so no password is needed to start without a .env.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+
+  backend:
+    build: *backend-build
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file: *backend-env-file
+    environment:
+      <<: *backend-environment
+      RUN_MIGRATIONS: "true"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on: *backend-depends-on
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/')"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  celery:
+    build: *backend-build
+    command: celery -A config.celery:celery_app worker --loglevel=info
+    env_file: *backend-env-file
+    environment: *backend-environment
+    volumes:
+      - ./backend:/app
+    depends_on:
+      <<: *backend-depends-on
+      backend:
+        condition: service_healthy
+
+  celery-beat:
+    build: *backend-build
+    command: >
+      celery -A config.celery:celery_app beat --loglevel=info
+      --schedule=/tmp/celerybeat-schedule --pidfile=
+    env_file: *backend-env-file
+    environment: *backend-environment
+    volumes:
+      - ./backend:/app
+    depends_on:
+      <<: *backend-depends-on
+      backend:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    command: npm run dev
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+      # Bind mounts from Windows and macOS do not send file events, so
+      # Vite polls for changes to reload the page on every edit.
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "300"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
+  frontend_node_modules:
