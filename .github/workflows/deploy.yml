@@ -1,0 +1,67 @@
+name: Deploy
+
+# Runs when you push a tag like v1.0.0:  git tag v1.0.0 && git push origin v1.0.0
+# Images always build. The server step runs only after you set the repository
+# variable DEPLOY_ENABLED=true and the secrets DEPLOY_HOST, DEPLOY_USER,
+# DEPLOY_SSH_KEY and DEPLOY_PATH (Settings > Secrets and variables > Actions).
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push backend
+        if: hashFiles('backend/Dockerfile') != ''
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/freecook-backend:${{ github.ref_name }}
+      - name: Build and push frontend
+        if: hashFiles('frontend/Dockerfile') != ''
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/freecook-frontend:${{ github.ref_name }}
+
+  server:
+    needs: images
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy over SSH
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          APP_PATH: ${{ secrets.DEPLOY_PATH }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          install -m 600 /dev/null key && printf '%s\n' "$KEY" > key
+          ssh-keyscan -H "$HOST" >> known_hosts
+          ssh -i key -o UserKnownHostsFile=known_hosts "$USER@$HOST" "
+            set -e
+            cd '$APP_PATH'
+            export TAG='$TAG'
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml run --rm backend python manage.py migrate --noinput
+            docker compose -f docker-compose.prod.yml up -d
+            sleep 5
+            curl -fsS http://localhost/api/health/
+          "
+          rm -f key
