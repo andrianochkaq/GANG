@@ -21,7 +21,7 @@ and a recipe journal.
 | `nginx/`    | Reverse proxy configuration               |
 
 The Django skeleton lives in `backend/` and the React skeleton in
-`frontend/`. The Docker Compose setup is added by FC-004.
+`frontend/`. `docker-compose.yml` runs them with their services.
 
 ## Getting started
 
@@ -46,11 +46,29 @@ The Django skeleton lives in `backend/` and the React skeleton in
 4. Start the whole stack:
 
    ```bash
-   docker compose up
+   docker compose up --build
    ```
 
-   This command works once FC-004 is merged. It starts the Django API,
-   the React app, PostgreSQL, Redis and Celery.
+   This starts PostgreSQL 16, Redis, Mailpit, the Django API, a Celery
+   worker, Celery beat and the Vite dev server. The API container
+   enables the `pg_trgm` extension and applies migrations on start.
+   Without a `.env` file the stack still starts with development
+   defaults.
+
+| Service  | Address                                  |
+| -------- | ---------------------------------------- |
+| App      | http://localhost:5173                    |
+| API      | http://localhost:8000 (`/api/docs/`)     |
+| Mailpit  | http://localhost:8025 (all dev emails)   |
+
+Editing a `.py` or `.tsx` file reloads the API and the app. The Celery
+worker does not reload by itself: run `docker compose restart celery`
+after changing a task. After changing `requirements.txt` or
+`package.json`, run `docker compose up --build`. The frontend keeps its
+`node_modules` in a volume, so after a `package.json` change also run
+`docker compose down` and `docker volume rm freecook_frontend_node_modules`
+before starting again. `docker compose down -v` deletes the database
+too.
 
 ## Backend without Docker
 

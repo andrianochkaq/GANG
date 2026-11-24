@@ -19,3 +19,13 @@ SIMPLE_JWT = {
     **SIMPLE_JWT,
     "SIGNING_KEY": SIMPLE_JWT["SIGNING_KEY"] or SECRET_KEY,
 }
+
+# Outgoing email. Without SMTP_HOST it goes to a local Mailpit on port
+# 1025, which is what the Docker Compose stack runs.
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("SMTP_HOST") or "localhost"
+EMAIL_PORT = int(os.environ.get("SMTP_PORT") or 1025)
+EMAIL_HOST_USER = os.environ.get("SMTP_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+EMAIL_USE_TLS = os.environ.get("SMTP_USE_TLS", "false").lower() == "true"
+DEFAULT_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL") or "noreply@freecook.local"
