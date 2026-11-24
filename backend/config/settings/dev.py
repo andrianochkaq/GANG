@@ -3,7 +3,7 @@
 import os
 
 from .base import *  # noqa: F403
-from .base import ALLOWED_HOSTS, CORS_ALLOWED_ORIGINS, SIMPLE_JWT, read_env_list
+from .base import ALLOWED_HOSTS, CORS_ALLOWED_ORIGINS, SIMPLE_JWT
 
 # Not a secret: a placeholder so the project starts without a .env file.
 DEVELOPMENT_SECRET_KEY = "freecook-development-only-key-not-for-production"
