@@ -15,17 +15,11 @@ export default function HealthStatusPage() {
           <span className="fc-sr">{t('health.loading')}</span>
         </div>
       )}
-      {isError && (
-        <p className="fc-health__error" role="alert">
-          {t('health.loadError')}
-        </p>
-      )}
+      {isError && <p className="fc-health__error" role="alert">{t('health.loadError')}</p>}
       {data && (
         <section className="fc-card" aria-labelledby="health-title">
           <div className="fc-card__head">
-            <h2 id="health-title" className="fc-card__title">
-              {t('health.title')}
-            </h2>
+            <h2 id="health-title" className="fc-card__title">{t('health.title')}</h2>
           </div>
           <p className="fc-health__meta">{t('health.subtitle')}</p>
           <HealthStatusPageRow label={t('health.database')} status={data.db} />

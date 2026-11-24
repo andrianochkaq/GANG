@@ -1,0 +1,27 @@
+# Lint and format settings for the backend. Run from the backend/ folder:
+#   ruff check .      black --check .      pytest
+# pytest itself is configured in pytest.ini.
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+extend-exclude = "/migrations/"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["."]
+
+[tool.ruff.lint]
+# E, W: pycodestyle. F: pyflakes. I: import order.
+# N: pep8-naming, the naming rules of docs/conventions.md.
+select = ["E", "F", "W", "I", "N"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["apps", "config", "core"]
+
+[tool.ruff.lint.per-file-ignores]
+# Settings modules start with `from .base import *` on purpose.
+"config/settings/*.py" = ["I001"]
+# Generated migrations: file names start with a digit and lines can be long.
+"**/migrations/*.py" = ["N999", "E501"]

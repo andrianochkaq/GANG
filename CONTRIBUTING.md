@@ -95,6 +95,35 @@ TypeScript and React:
   `<Component>Props`, no `I` prefix.
 - Non-component files are `camelCase.ts`; folders are `kebab-case`.
 
+## Checks
+
+CI runs on every pull request and a red check blocks merging. It checks
+the branch, title and commit names, then lints, formats and tests the
+backend and the frontend, and builds the Docker images.
+
+| Part     | Lint                | Format                 | Tests    |
+| -------- | ------------------- | ---------------------- | -------- |
+| backend  | `ruff check .`      | `black --check .`      | `pytest` |
+| frontend | `npm run lint`      | `npm run format:check` | `npm test` |
+
+Run the backend commands in `backend/` after `pip install -r
+requirements.txt -r requirements-dev.txt`, and the frontend commands in
+`frontend/` after `npm install`. `scripts/test.sh` runs all of them in
+Docker. `black` and `npm run format` fix formatting; `ruff check --fix .`
+fixes what it can.
+
+The linters also enforce the naming rules above: `ruff` with the `N`
+(pep8-naming) rules for Python and
+`@typescript-eslint/naming-convention` for TypeScript. The only
+one-letter name allowed in TypeScript is `t` from `react-i18next`.
+
+To run the checks before every commit, install the hooks once:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
 ## Secrets
 
 Never commit passwords, tokens or keys. Read them from environment

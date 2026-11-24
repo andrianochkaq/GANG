@@ -105,11 +105,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-      - name: Lint
+      - name: Lint (ruff) and format check (black)
         if: steps.detect.outputs.present == 'true'
         run: |
-          if command -v ruff >/dev/null; then ruff check .; else echo "ruff not installed - skipping"; fi
-          if command -v black >/dev/null; then black --check .; else echo "black not installed - skipping"; fi
+          ruff check .
+          black --check .
       - name: Migrations are up to date
         if: steps.detect.outputs.present == 'true' && hashFiles('backend/manage.py') != ''
         run: python manage.py makemigrations --check --dry-run
@@ -137,12 +137,18 @@ jobs:
           node-version: "20"
       - name: Install dependencies
         if: steps.detect.outputs.present == 'true'
-        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
-      - name: Lint and type-check
+        # npm ci fails while package-lock.json lacks the lint tools added by
+        # FC-005; npm install then fills the gap. Use plain npm ci once the
+        # lock file is regenerated.
+        run: npm ci || npm install
+      - name: Lint (ESLint) and format check (Prettier)
         if: steps.detect.outputs.present == 'true'
         run: |
-          npm run lint --if-present
-          npm run typecheck --if-present
+          npm run lint
+          npm run format:check
+      - name: Type-check
+        if: steps.detect.outputs.present == 'true'
+        run: npm run typecheck
       - name: Tests
         if: steps.detect.outputs.present == 'true'
         run: npm run test --if-present

@@ -1,4 +1,5 @@
 """Local development settings."""
+
 import os
 
 from .base import *  # noqa: F403

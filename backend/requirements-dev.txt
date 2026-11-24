@@ -1,0 +1,5 @@
+# Lint and format tools. Versions are pinned so CI, pre-commit and the
+# Docker image format code the same way (keep them in sync with
+# .pre-commit-config.yaml).
+ruff==0.8.4
+black==24.10.0
