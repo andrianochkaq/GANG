@@ -199,11 +199,12 @@ erDiagram
         string phone "unique, nullable, E.164"
         bigint telegram_id "unique, nullable"
         string password "nullable"
+        bool is_email_verified
         string name
         string nickname "unique"
         string gender "female | male | unset"
         string theme_color "default white"
-        bool onboarding_done
+        bool is_onboarding_done
     }
     USER_PROFILE {
         decimal weight_kg
