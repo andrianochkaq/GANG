@@ -1,5 +1,6 @@
 import pytest
 from django.core.cache import cache
+from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
@@ -27,7 +28,8 @@ def build_request(data, ip_address="203.0.113.5"):
         format="json",
         REMOTE_ADDR=ip_address,
     )
-    return Request(http_request)
+    # A bare Request has no parsers; a view would supply them.
+    return Request(http_request, parsers=[JSONParser()])
 
 
 def count_allowed_requests(throttle_class, make_request, attempts):
