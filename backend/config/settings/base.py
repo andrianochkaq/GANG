@@ -135,6 +135,12 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # Counters live in Redis (the default cache). The code rates must match
+    # MAX_CODE_REQUESTS_PER_HOUR in apps/accounts/services/codes.py.
+    "DEFAULT_THROTTLE_RATES": {
+        "code_ip": "5/hour",
+        "code_target": "5/hour",
+    },
 }
 
 SIMPLE_JWT = {
