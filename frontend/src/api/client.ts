@@ -12,4 +12,7 @@ export const apiClient = axios.create({
   baseURL: getApiBaseUrl(import.meta.env.VITE_API_URL),
   timeout: REQUEST_TIMEOUT_MS,
   headers: { Accept: 'application/json' },
+  // The refresh token is an HttpOnly cookie, sent also to a backend on
+  // another origin (VITE_API_URL in development).
+  withCredentials: true,
 });
