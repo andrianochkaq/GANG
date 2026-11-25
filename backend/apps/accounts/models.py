@@ -15,6 +15,7 @@ from django.contrib.auth.models import (
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .validators import validate_phone_number
@@ -48,6 +49,14 @@ class ThemeColor(models.TextChoices):
     CHERRY = "cherry", "Вишня"
     SAKURA = "sakura", "Сакура"
     FOG = "fog", "Туман"
+
+
+class CodePurpose(models.TextChoices):
+    """What a one-time code is for."""
+
+    EMAIL_VERIFICATION = "email_verification", "Підтвердження email"
+    PHONE_LOGIN = "phone_login", "Вхід за телефоном"
+    TELEGRAM_LOGIN = "telegram_login", "Вхід через Telegram"
 
 
 class UserManager(BaseUserManager):
@@ -174,3 +183,40 @@ class User(AbstractBaseUser, PermissionsMixin):
         email = (self.email or "").strip()
         self.email = UserManager.normalize_email(email) or None
         self.phone = (self.phone or "").strip() or None
+
+
+class OneTimeCode(models.Model):
+    """A 6-digit code sent to an email, a phone or a Telegram account.
+
+    Only a keyed hash of the code is stored, never the code itself. The
+    rules (10 minutes, 5 attempts, resend and hourly limits) live in
+    ``apps.accounts.services.codes``. Rows are kept for an hour after they
+    are created, because the hourly request limits count them.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    purpose = models.CharField(max_length=20, choices=CodePurpose.choices)
+    # The email, phone number or Telegram id the code was sent to, normalized.
+    target = models.CharField(max_length=254)
+    code_hash = models.CharField(max_length=64)
+    # Who asked for the code; empty when it was requested without a request.
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    attempt_count = models.PositiveSmallIntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["target", "created_at"],
+                name="accounts_code_target_idx",
+            ),
+            models.Index(
+                fields=["ip_address", "created_at"],
+                name="accounts_code_ip_idx",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.purpose} code for {self.target}"
