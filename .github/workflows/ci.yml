@@ -79,7 +79,9 @@ jobs:
         image: redis:7
         ports: ["6379:6379"]
     env:
-      DATABASE_URL: postgres://freecook:freecook@localhost:5432/freecook
+      # config/settings/base.py reads POSTGRES_*; the other values default to
+      # the service above (db freecook, user freecook, host localhost).
+      POSTGRES_PASSWORD: freecook
       REDIS_URL: redis://localhost:6379/0
       DJANGO_SECRET_KEY: ci-only-secret
       JWT_SIGNING_KEY: ci-only-jwt
