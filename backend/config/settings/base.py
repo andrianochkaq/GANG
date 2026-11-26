@@ -156,6 +156,10 @@ SPECTACULAR_SETTINGS = {
 
 CORS_ALLOWED_ORIGINS = read_env_list("CORS_ALLOWED_ORIGINS", [])
 
+# Dotted path of the SMS backend class (core/sms.py). Empty means no SMS can
+# be sent; the provider for production is chosen in FC-109.
+SMS_BACKEND = os.environ.get("SMS_BACKEND", "")
+
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TIMEZONE = TIME_ZONE

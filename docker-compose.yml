@@ -27,6 +27,8 @@ x-backend-environment: &backend-environment
   SMTP_USE_TLS: "false"
   SMTP_USER: ""
   SMTP_PASSWORD: ""
+  # Text messages are printed to the log, never sent to a real phone.
+  SMS_BACKEND: core.sms.ConsoleSmsBackend
 
 x-backend-depends-on: &backend-depends-on
   db:

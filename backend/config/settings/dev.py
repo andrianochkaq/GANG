@@ -30,3 +30,6 @@ EMAIL_HOST_USER = os.environ.get("SMTP_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
 EMAIL_USE_TLS = os.environ.get("SMTP_USE_TLS", "false").lower() == "true"
 DEFAULT_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL") or "noreply@freecook.local"
+
+# Text messages are printed to the console, never sent to a real phone.
+SMS_BACKEND = os.environ.get("SMS_BACKEND") or "core.sms.ConsoleSmsBackend"
