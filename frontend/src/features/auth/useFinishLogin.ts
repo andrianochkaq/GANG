@@ -22,7 +22,7 @@ export function useFinishLogin() {
   return useCallback(
     (access: string) => {
       startSession(access);
-      // New accounts pick the app colour next (FC-202) once that screen exists.
+      // ProfileGate sends accounts that have not picked an app colour yet to that screen.
       navigate(getRedirectTarget(location.state), { replace: true });
     },
     [navigate, location.state],

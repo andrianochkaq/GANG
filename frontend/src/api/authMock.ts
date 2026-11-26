@@ -1,5 +1,6 @@
 import { AuthApiError } from './authErrors';
 import type { AuthApi, TelegramLoginStatus } from './authTypes';
+import { resetProfileMock, startMockOnboarding } from './profileMock';
 
 // In-memory stand-in for the auth backend (FC-103 … FC-107), switched on with
 // VITE_AUTH_MOCK=true. Its rules mirror FC-102: 6-digit codes, 5 attempts,
@@ -42,6 +43,7 @@ let hasMemorySession = false;
 export function resetAuthMock(): void {
   state = createState();
   writeSessionFlag(false);
+  resetProfileMock();
 }
 
 function wait(delayMs: number): Promise<void> {
@@ -109,6 +111,8 @@ export function createMockAuthApi(delayMs = RESPONSE_DELAY_MS): AuthApi {
     async verifyEmail(email, code) {
       await wait(delayMs);
       checkCode(email, code);
+      // A confirmed registration is a new account: it still has to pick its colour.
+      startMockOnboarding();
       return issueTokens();
     },
     async resendEmailCode(email) {
