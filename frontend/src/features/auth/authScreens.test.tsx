@@ -18,6 +18,11 @@ vi.mock('../../api/auth', async () => {
   return { authApi: createMockAuthApi(0), isAuthMockEnabled: () => true };
 });
 
+vi.mock('../../api/profile', async () => {
+  const { createMockProfileApi } = await import('../../api/profileMock');
+  return { profileApi: createMockProfileApi(0) };
+});
+
 vi.mock('../../api/health', () => ({ fetchHealthStatus: vi.fn() }));
 
 function typeCode(code: string) {
@@ -87,7 +92,9 @@ describe('auth screens', () => {
 
     typeCode(MOCK_CODE);
     fireEvent.click(screen.getByRole('button', { name: 'Підтвердити' }));
-    await waitFor(() => expect(router.getPathname()).toBe('/'));
+    // A new account picks its app colour next (FC-202).
+    await waitFor(() => expect(router.getPathname()).toBe('/onboarding/color'));
+    expect(await screen.findByRole('heading', { name: 'Колір застосунку' })).toBeTruthy();
   });
 
   it('explains an expired SMS code', async () => {
