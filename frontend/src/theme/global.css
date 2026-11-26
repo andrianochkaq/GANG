@@ -20,3 +20,136 @@ body { margin: 0; font-family: var(--font-text); color: var(--text); background:
 .fc-health__value--error { color: var(--danger); }
 .fc-health__error { margin: 0; font-size: 14px; line-height: 1.4; font-weight: 600; color: var(--danger); }
 .fc-skeleton { background: var(--soft); border-radius: var(--radius-card); height: 132px; }
+
+/* From docs/design-system/components.css: classes used by the auth screens */
+button, input, select, textarea { font-family: inherit; }
+button { cursor: pointer; }
+:where(.fc-btn, .fc-iconbtn, .fc-seg button, .fc-input, .fc-select, .fc-code input, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.fc-btn { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-8);
+  height: var(--size-control-lg); padding: 0 var(--space-24); border: none; border-radius: var(--radius-lg);
+  font-size: 16px; font-weight: 600; line-height: 1; text-decoration: none; white-space: nowrap; }
+.fc-btn--block { display: flex; width: 100%; }
+.fc-btn--primary { background: var(--accent); color: var(--on-accent); }
+.fc-btn--secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border-input); }
+.fc-btn--tonal { background: var(--soft); color: var(--text); }
+.fc-btn--text { background: transparent; color: var(--text); height: var(--size-control-sm); padding: 0 var(--space-8); font-size: 14px; }
+.fc-btn--sm { height: var(--size-control-sm); border-radius: var(--radius-md); font-size: 14px; padding: 0 var(--space-14); }
+.fc-btn[disabled], .fc-btn[aria-disabled="true"] { background: var(--neutral-tile); color: var(--text-subtle); border-color: transparent; cursor: not-allowed; }
+.fc-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.fc-field { display: flex; flex-direction: column; gap: var(--space-6); }
+.fc-field__label { font-size: 14px; font-weight: 600; color: var(--text); }
+.fc-field__top { display: flex; justify-content: space-between; align-items: baseline; }
+.fc-field__link { font-size: 13px; font-weight: 600; color: var(--ink); text-decoration: none; }
+.fc-field__hint { font-size: 13px; color: var(--text-subtle); }
+.fc-field__error { margin: 0; font-size: 13px; font-weight: 600; color: var(--danger); }
+.fc-input { box-sizing: border-box; width: 100%; height: var(--size-control-lg); padding: 0 var(--space-16); border: 1px solid var(--border-input);
+  border-radius: var(--radius-lg); background: var(--surface); font-size: 16px; color: var(--text); }
+.fc-input::placeholder { color: var(--text-subtle); }
+.fc-input:focus { outline: none; border: 2px solid var(--accent); padding: 0 calc(var(--space-16) - 1px); }
+.fc-input[aria-invalid="true"] { border: 2px solid var(--danger); }
+.fc-inputrow { display: flex; gap: var(--space-8); }
+.fc-select { box-sizing: border-box; height: var(--size-control-md); border: 1px solid var(--border-input); border-radius: var(--radius-md); background: var(--surface);
+  font-size: 16px; color: var(--text); padding: 0 var(--space-10); }
+
+.fc-code { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-8); }
+.fc-code input { box-sizing: border-box; min-width: 0; height: var(--size-code-cell); border: 1px solid var(--border-input); border-radius: var(--radius-md);
+  background: var(--surface); text-align: center; font-size: 22px; font-weight: 600; color: var(--text); }
+.fc-code input.is-filled, .fc-code input:focus { outline: none; border: 2px solid var(--accent); }
+.fc-code input[aria-invalid="true"] { border: 2px solid var(--danger); }
+
+.fc-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--space-4); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--soft); }
+.fc-seg button { height: var(--size-control-xs); border: none; border-radius: var(--radius-sm); background: transparent; font-size: 14px; color: var(--text); }
+.fc-seg button[aria-selected="true"] { background: var(--surface); font-weight: 600; box-shadow: var(--shadow-tab); }
+.fc-seg--lg button { height: var(--size-control-sm); font-size: 15px; }
+
+.fc-banner { display: flex; gap: var(--space-10); align-items: flex-start; padding: var(--space-12) var(--space-14); border-radius: var(--radius-lg); font-size: 13px; line-height: 1.45; }
+.fc-banner svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+.fc-banner--info { background: var(--surface); color: var(--text-secondary); font-size: 14px; }
+
+.fc-progress { height: 6px; border-radius: var(--radius-bar); background: var(--line); overflow: hidden; }
+.fc-progress > span { display: block; height: 100%; border-radius: var(--radius-bar); background: var(--accent); }
+.fc-steps { display: flex; flex-direction: column; gap: var(--space-8); }
+.fc-steps__label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.fc-link { font-size: 13px; font-weight: 600; color: var(--ink); text-decoration: none; }
+
+/* Auth frame (02-layout-and-screens.md, «Onboarding / auth» and «Auth on desktop»).
+   Layout classes for the Login3 / Phone3 / Code3 / Forgot3 and DLogin / DPhone / DForgot boards. */
+.fc-auth { box-sizing: border-box; min-height: 100vh; background: var(--bg); display: flex; }
+.fc-auth__brand { display: none; }
+.fc-auth__main { box-sizing: border-box; flex: 1; display: flex; justify-content: center; }
+.fc-auth__form { box-sizing: border-box; width: 100%; max-width: var(--size-phone); padding: var(--space-16) var(--space-24) var(--space-24); display: flex; flex-direction: column; gap: var(--space-20); }
+.fc-auth__form--root { padding-top: var(--space-24); gap: var(--space-16); }
+.fc-auth__back { align-self: flex-start; height: var(--size-control-sm); display: inline-flex; align-items: center; gap: var(--space-6); font-size: 15px; font-weight: 500; color: var(--text); text-decoration: none; }
+.fc-auth__back svg { width: 20px; height: 20px; }
+.fc-auth__mascot { display: flex; flex-direction: column; align-items: center; gap: var(--space-10); }
+.fc-auth__mascotcircle { width: 132px; height: 132px; border-radius: var(--radius-pill); background: var(--soft); display: flex; align-items: center; justify-content: center; }
+.fc-auth__mascotcircle img { width: 78px; height: 114px; object-fit: contain; }
+.fc-auth__wordmark { font-family: var(--font-display); font-weight: 600; font-size: 22px; }
+.fc-auth__intro { display: flex; flex-direction: column; gap: var(--space-8); }
+.fc-auth__intro--desktop { display: none; }
+.fc-auth__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 28px; line-height: 1.15; }
+.fc-auth__text { margin: 0; font-size: 15px; line-height: 1.45; color: var(--text-subtle); }
+.fc-auth__text b { color: var(--text); }
+.fc-auth__fields { display: flex; flex-direction: column; gap: var(--space-12); margin: 0; }
+.fc-auth__divider { display: flex; align-items: center; gap: var(--space-12); color: var(--text-subtle); font-size: 13px; }
+.fc-auth__divider::before, .fc-auth__divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.fc-auth__methods { display: grid; gap: var(--space-10); }
+.fc-auth__method { box-sizing: border-box; height: var(--size-control-lg); border: 1px solid var(--border-input); border-radius: var(--radius-lg); background: var(--surface);
+  display: flex; align-items: center; gap: var(--space-12); padding: 0 var(--space-16); color: var(--text); text-decoration: none; font-size: 15px; font-weight: 600; text-align: left; }
+.fc-auth__method svg { width: 20px; height: 20px; flex-shrink: 0; }
+.fc-auth__methodname { flex: 1; }
+.fc-auth__methodhint { font-size: 13px; font-weight: 400; color: var(--text-subtle); }
+.fc-auth__legal { margin: auto 0 0; text-align: center; font-size: 12px; line-height: 1.4; color: var(--text-subtle); }
+.fc-auth__note { margin: 0; text-align: center; font-size: 13px; line-height: 1.45; color: var(--text-subtle); }
+.fc-auth__infobox { display: flex; flex-direction: column; gap: var(--space-10); padding: var(--space-16); border-radius: var(--radius-bubble); background: var(--surface); }
+.fc-auth__infotitle { font-size: 15px; font-weight: 600; }
+.fc-auth__infotext { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+.fc-auth__infolist { margin: 0; padding-left: var(--space-20); font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+.fc-auth__chips { display: flex; gap: var(--space-8); flex-wrap: wrap; }
+.fc-auth__chips .fc-btn { height: var(--size-control-xs); border-radius: var(--radius-sm); }
+.fc-auth__icontile { width: 72px; height: 72px; border-radius: var(--radius-card-lg); background: var(--soft); color: var(--ink); display: flex; align-items: center; justify-content: center; }
+.fc-auth__icontile svg { width: 34px; height: 34px; }
+.fc-auth__numbercard { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-14) var(--space-16); border-radius: var(--radius-xl); background: var(--surface); }
+.fc-auth__numbertext { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.fc-auth__numberlabel { font-size: 13px; color: var(--text-subtle); }
+.fc-auth__number { font-size: 17px; font-weight: 600; }
+.fc-auth__country { height: var(--size-control-lg); border-radius: var(--radius-lg); font-weight: 600; }
+.fc-auth__fieldset { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-10); }
+.fc-auth__legend { font-size: 14px; font-weight: 600; padding: 0; margin-bottom: var(--space-10); }
+.fc-auth__resend { margin: 0; font-size: 13px; color: var(--text-subtle); }
+.fc-auth__resend button { border: none; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--ink); }
+.fc-auth__wait { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-14) var(--space-16); border-radius: var(--radius-xl); background: var(--surface); font-size: 15px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fc-auth__spinner { animation: fc-spin 1s linear infinite; }
+}
+.fc-auth__spinner { width: 20px; height: 20px; flex-shrink: 0; border-radius: var(--radius-pill); border: 2px solid var(--line); border-top-color: var(--accent); box-sizing: border-box; }
+@keyframes fc-spin { to { transform: rotate(360deg); } }
+
+@media (min-width: 1024px) {
+  .fc-auth { padding: var(--space-16); gap: var(--space-16); }
+  .fc-auth__brand { box-sizing: border-box; flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-28);
+    padding: var(--space-40); border-radius: var(--radius-hero); background: var(--soft); }
+  .fc-auth__logo { display: flex; align-items: center; gap: var(--space-10); font-family: var(--font-display); font-weight: 600; font-size: 24px; }
+  .fc-auth__logomark { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); display: flex; align-items: center; justify-content: center; }
+  .fc-auth__logomark svg { width: 22px; height: 22px; }
+  .fc-auth__brandart { display: flex; justify-content: center; }
+  .fc-auth__brandart img { width: 220px; height: 321px; object-fit: contain; }
+  .fc-auth__brandcopy { display: flex; flex-direction: column; gap: var(--space-10); max-width: 480px; }
+  .fc-auth__brandtitle { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 32px; line-height: 1.2; }
+  .fc-auth__brandtext { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
+  .fc-auth__brandsteps { display: flex; flex-direction: column; gap: var(--space-14); max-width: 440px; padding: var(--space-24); border-radius: var(--radius-card-lg); background: var(--surface); }
+  .fc-auth__brandsteps ol { margin: 0; padding-left: var(--space-20); display: flex; flex-direction: column; gap: var(--space-12); font-size: 15px; line-height: 1.5; color: var(--text-secondary); }
+  .fc-auth__main { flex: 1 1 420px; min-width: 0; align-items: center; padding: var(--space-28) var(--space-16); }
+  .fc-auth__form { max-width: 400px; padding: 0; }
+  .fc-auth__mascot { display: none; }
+  .fc-auth__intro--desktop { display: flex; }
+  .fc-auth__title { font-size: 32px; }
+  .fc-auth__methods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fc-auth__method { justify-content: center; gap: var(--space-8); font-size: 14px; }
+  .fc-auth__methodname { flex: none; }
+  .fc-auth__methodhint { display: none; }
+  .fc-auth__legal { margin-top: 0; }
+}

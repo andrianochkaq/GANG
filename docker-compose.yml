@@ -138,6 +138,7 @@ services:
     command: npm run dev
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+      VITE_AUTH_MOCK: ${VITE_AUTH_MOCK:-false}
       # Bind mounts from Windows and macOS do not send file events, so
       # Vite polls for changes to reload the page on every edit.
       CHOKIDAR_USEPOLLING: "true"
