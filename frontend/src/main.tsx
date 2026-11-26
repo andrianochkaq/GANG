@@ -10,6 +10,7 @@ import './i18n';
 import { router } from './routes/router';
 import { useAuthStore } from './store/authStore';
 import './theme/global.css';
+import ThemeProvider from './theme/ThemeProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,9 +31,11 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </ThemeProvider>
     </StrictMode>,
   );
 }
