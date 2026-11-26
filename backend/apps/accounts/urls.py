@@ -6,6 +6,7 @@ from .views.email import (
     EmailRegisterView,
     EmailVerifyView,
 )
+from .views.password import PasswordForgotView, PasswordResetView
 from .views.phone import PhoneCodeRequestView, PhoneLoginView
 from .views.session import LogoutView, SessionRefreshView
 from .views.telegram import (
@@ -21,6 +22,16 @@ urlpatterns = [
     path("email-login/", EmailLoginView.as_view(), name="email-login"),
     path("refresh/", SessionRefreshView.as_view(), name="refresh"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    path(
+        "password-forgot/",
+        PasswordForgotView.as_view(),
+        name="password-forgot",
+    ),
+    path(
+        "password-reset/",
+        PasswordResetView.as_view(),
+        name="password-reset",
+    ),
     path("phone-code/", PhoneCodeRequestView.as_view(), name="phone-code"),
     path("phone-login/", PhoneLoginView.as_view(), name="phone-login"),
     path(

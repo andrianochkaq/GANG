@@ -46,6 +46,7 @@ def test_prod_settings_require_secret_key(monkeypatch):
 def test_prod_settings_read_values_from_environment(monkeypatch):
     monkeypatch.setenv("DJANGO_SECRET_KEY", "production-secret-key")
     monkeypatch.setenv("JWT_SECRET_KEY", "production-jwt-key")
+    monkeypatch.setenv("FRONTEND_URL", "https://freecook.example")
     monkeypatch.setenv("DJANGO_ALLOWED_HOSTS", "freecook.example, api.example")
     monkeypatch.delitem(sys.modules, "config.settings.prod", raising=False)
 
@@ -55,6 +56,7 @@ def test_prod_settings_read_values_from_environment(monkeypatch):
     assert prod_settings.SECRET_KEY == "production-secret-key"
     assert prod_settings.ALLOWED_HOSTS == ["freecook.example", "api.example"]
     assert prod_settings.SIMPLE_JWT["SIGNING_KEY"] == "production-jwt-key"
+    assert prod_settings.FRONTEND_URL == "https://freecook.example"
 
 
 def test_jwt_sessions_rotate_and_blacklist_refresh_tokens():
@@ -65,3 +67,18 @@ def test_jwt_sessions_rotate_and_blacklist_refresh_tokens():
     assert jwt_settings["ROTATE_REFRESH_TOKENS"] is True
     assert jwt_settings["BLACKLIST_AFTER_ROTATION"] is True
     assert "rest_framework_simplejwt.token_blacklist" in settings.INSTALLED_APPS
+
+
+def test_prod_settings_require_frontend_url(monkeypatch):
+    monkeypatch.setenv("DJANGO_SECRET_KEY", "production-secret-key")
+    monkeypatch.setenv("JWT_SECRET_KEY", "production-jwt-key")
+    monkeypatch.setenv("DJANGO_ALLOWED_HOSTS", "freecook.example")
+    monkeypatch.delenv("FRONTEND_URL", raising=False)
+    monkeypatch.delitem(sys.modules, "config.settings.prod", raising=False)
+
+    with pytest.raises(ImproperlyConfigured):
+        import_module("config.settings.prod")
+
+
+def test_password_reset_link_lives_one_hour():
+    assert settings.PASSWORD_RESET_TIMEOUT == 60 * 60

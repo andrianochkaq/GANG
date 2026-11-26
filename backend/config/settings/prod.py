@@ -7,6 +7,8 @@ DEBUG = False
 
 SECRET_KEY = require_env("DJANGO_SECRET_KEY")
 
+FRONTEND_URL = require_env("FRONTEND_URL")
+
 ALLOWED_HOSTS = read_env_list("DJANGO_ALLOWED_HOSTS", [])
 if not ALLOWED_HOSTS:
     require_env("DJANGO_ALLOWED_HOSTS")

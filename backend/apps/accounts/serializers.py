@@ -148,6 +148,30 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         return user.telegram_id is not None
 
 
+class PasswordForgotSerializer(EmailCodeRequestSerializer):
+    """The email of the account whose password is forgotten."""
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """The parts of the emailed link and the new password.
+
+    The password goes through Django validators in the view, because the
+    similarity check needs the user the link belongs to.
+    """
+
+    uid = serializers.CharField(max_length=64)
+    token = serializers.CharField(max_length=128)
+    password = serializers.CharField(
+        max_length=128,
+        write_only=True,
+        trim_whitespace=False,
+    )
+
+
+class PasswordMessageSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+
+
 class TelegramLoginStartedSerializer(serializers.Serializer):
     token = serializers.CharField()
     deep_link = serializers.URLField()
