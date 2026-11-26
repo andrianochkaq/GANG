@@ -10,6 +10,8 @@ DEVELOPMENT_SECRET_KEY = "freecook-development-only-key-not-for-production"
 
 DEBUG = True
 
+FRONTEND_URL = os.environ.get("FRONTEND_URL") or "http://localhost:5173"
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or DEVELOPMENT_SECRET_KEY
 
 ALLOWED_HOSTS = ALLOWED_HOSTS or ["localhost", "127.0.0.1", "[::1]"]

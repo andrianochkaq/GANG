@@ -71,7 +71,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -108,6 +108,12 @@ CACHES = {
 }
 
 AUTH_USER_MODEL = "accounts.User"
+
+# The reset link of "forgot password" works for one hour and, because the
+# token depends on the password hash, only once. FRONTEND_URL is the origin
+# of the React app that the link points to (no trailing slash needed).
+PASSWORD_RESET_TIMEOUT = 60 * 60
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
