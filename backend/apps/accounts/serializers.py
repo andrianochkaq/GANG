@@ -2,6 +2,7 @@
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.models import User
@@ -100,6 +101,51 @@ class EmailLoginResultSerializer(serializers.Serializer):
     refresh = serializers.CharField()
     access = serializers.CharField()
     is_new_user = serializers.BooleanField()
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    """The refresh token a session is renewed or ended with."""
+
+    refresh = serializers.CharField()
+
+
+class SessionRefreshResultSerializer(serializers.Serializer):
+    """A new pair. The refresh token sent in is revoked."""
+
+    refresh = serializers.CharField()
+    access = serializers.CharField()
+
+
+class CurrentUserSerializer(serializers.ModelSerializer):
+    """The signed-in user. Contacts are read-only: they change by login."""
+
+    is_telegram_linked = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "phone",
+            "is_telegram_linked",
+            "is_email_verified",
+            "name",
+            "nickname",
+            "gender",
+            "theme_color",
+            "is_onboarding_done",
+        ]
+        read_only_fields = [
+            "id",
+            "email",
+            "phone",
+            "is_telegram_linked",
+            "is_email_verified",
+        ]
+
+    @extend_schema_field(serializers.BooleanField())
+    def get_is_telegram_linked(self, user):
+        return user.telegram_id is not None
 
 
 class TelegramLoginStartedSerializer(serializers.Serializer):

@@ -7,6 +7,7 @@ from .views.email import (
     EmailVerifyView,
 )
 from .views.phone import PhoneCodeRequestView, PhoneLoginView
+from .views.session import LogoutView, SessionRefreshView
 from .views.telegram import (
     TelegramLoginStartView,
     TelegramLoginStatusView,
@@ -18,6 +19,8 @@ urlpatterns = [
     path("email-code/", EmailCodeRequestView.as_view(), name="email-code"),
     path("email-verify/", EmailVerifyView.as_view(), name="email-verify"),
     path("email-login/", EmailLoginView.as_view(), name="email-login"),
+    path("refresh/", SessionRefreshView.as_view(), name="refresh"),
+    path("logout/", LogoutView.as_view(), name="logout"),
     path("phone-code/", PhoneCodeRequestView.as_view(), name="phone-code"),
     path("phone-login/", PhoneLoginView.as_view(), name="phone-login"),
     path(

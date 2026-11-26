@@ -1,4 +1,5 @@
 import sys
+from datetime import timedelta
 from importlib import import_module
 
 import pytest
@@ -54,3 +55,13 @@ def test_prod_settings_read_values_from_environment(monkeypatch):
     assert prod_settings.SECRET_KEY == "production-secret-key"
     assert prod_settings.ALLOWED_HOSTS == ["freecook.example", "api.example"]
     assert prod_settings.SIMPLE_JWT["SIGNING_KEY"] == "production-jwt-key"
+
+
+def test_jwt_sessions_rotate_and_blacklist_refresh_tokens():
+    jwt_settings = settings.SIMPLE_JWT
+
+    assert jwt_settings["ACCESS_TOKEN_LIFETIME"] == timedelta(minutes=15)
+    assert jwt_settings["REFRESH_TOKEN_LIFETIME"] == timedelta(days=30)
+    assert jwt_settings["ROTATE_REFRESH_TOKENS"] is True
+    assert jwt_settings["BLACKLIST_AFTER_ROTATION"] is True
+    assert "rest_framework_simplejwt.token_blacklist" in settings.INSTALLED_APPS
