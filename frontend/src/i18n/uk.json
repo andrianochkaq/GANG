@@ -2,6 +2,27 @@
   "app": {
     "name": "FreeCook"
   },
+  "theme": {
+    "colors": {
+      "white": "Білий",
+      "ocean": "Океан",
+      "sky": "Небо",
+      "lilac": "Бузок",
+      "lavender": "Лаванда",
+      "emerald": "Смарагд",
+      "summer": "Літо",
+      "sprout": "Паросток",
+      "lime": "Лайм",
+      "cinnamon": "Кориця",
+      "sunset": "Захід",
+      "peach": "Персик",
+      "lemon": "Лимон",
+      "burgundy": "Бургунді",
+      "cherry": "Вишня",
+      "sakura": "Сакура",
+      "fog": "Туман"
+    }
+  },
   "health": {
     "title": "Стан сервера",
     "subtitle": "Відповідь /api/health/",
