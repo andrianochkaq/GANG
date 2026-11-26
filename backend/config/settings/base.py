@@ -140,6 +140,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "code_ip": "5/hour",
         "code_target": "5/hour",
+        "telegram_start": "20/hour",
     },
 }
 
@@ -159,6 +160,14 @@ CORS_ALLOWED_ORIGINS = read_env_list("CORS_ALLOWED_ORIGINS", [])
 # Dotted path of the SMS backend class (core/sms.py). Empty means no SMS can
 # be sent; the provider for production is chosen in FC-109.
 SMS_BACKEND = os.environ.get("SMS_BACKEND", "")
+
+# The Telegram login bot (apps/accounts/telegram_bot.py). The username is
+# written without "@". The webhook secret is a string of letters, digits,
+# "_" and "-" that Telegram sends back in a header; while it is empty the
+# webhook refuses every call.
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_BOT_USERNAME = os.environ.get("TELEGRAM_BOT_USERNAME", "")
+TELEGRAM_WEBHOOK_SECRET = os.environ.get("TELEGRAM_WEBHOOK_SECRET", "")
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL

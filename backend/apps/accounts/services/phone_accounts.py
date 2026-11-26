@@ -23,7 +23,7 @@ def get_or_create_phone_user(phone):
         return user, False
     try:
         with transaction.atomic():
-            user = User.objects.create_user(_generate_nickname(), phone=phone)
+            user = User.objects.create_user(generate_nickname(), phone=phone)
     except IntegrityError:
         # Two first logins of one number can race: take the winner's row.
         user = User.objects.filter(phone=phone).first()
@@ -33,5 +33,6 @@ def get_or_create_phone_user(phone):
     return user, True
 
 
-def _generate_nickname():
+def generate_nickname():
+    """Return a unique-looking nickname that does not reveal any contact."""
     return NICKNAME_PREFIX + uuid.uuid4().hex[:NICKNAME_SUFFIX_LENGTH]
