@@ -220,3 +220,27 @@ class OneTimeCode(models.Model):
 
     def __str__(self):
         return f"{self.purpose} code for {self.target}"
+
+
+class TelegramLoginRequest(models.Model):
+    """A "Log in with Telegram" attempt that the bot has to confirm.
+
+    The token is secret: it goes into the bot's deep link and it is the
+    key the browser polls with. A request lives for 5 minutes and hands
+    out its sign-in once. The rules live in
+    ``apps.accounts.services.telegram_login``.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    token = models.CharField(max_length=64, unique=True)
+    # Set when the person presses "Confirm" in the bot.
+    telegram_id = models.BigIntegerField(null=True, blank=True)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    # The sign-in was handed to the browser and cannot be handed out again.
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+
+    def __str__(self):
+        # Never the token: it is a secret.
+        return f"Telegram login request {self.pk}"

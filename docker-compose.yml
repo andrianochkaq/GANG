@@ -118,6 +118,20 @@ services:
       backend:
         condition: service_healthy
 
+  # Telegram login by polling, because localhost cannot receive webhooks.
+  # Without TELEGRAM_BOT_TOKEN in .env it says so and exits.
+  bot:
+    build: *backend-build
+    command: python manage.py run_telegram_bot
+    env_file: *backend-env-file
+    environment: *backend-environment
+    volumes:
+      - ./backend:/app
+    depends_on:
+      <<: *backend-depends-on
+      backend:
+        condition: service_healthy
+
   frontend:
     build:
       context: ./frontend

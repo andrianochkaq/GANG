@@ -42,6 +42,18 @@ class CodeTargetThrottle(SimpleRateThrottle):
         return self.cache_format % {"scope": self.scope, "ident": target_hash}
 
 
+class TelegramStartThrottle(SimpleRateThrottle):
+    """At most 20 Telegram login requests per hour from one IP address."""
+
+    scope = "telegram_start"
+
+    def get_cache_key(self, request, view):
+        return self.cache_format % {
+            "scope": self.scope,
+            "ident": self.get_ident(request),
+        }
+
+
 def _read_target(request):
     data = request.data
     if not isinstance(data, Mapping):

@@ -7,13 +7,11 @@ yet gets one when its first code is accepted.
 import ipaddress
 import math
 
-from django.contrib.auth.models import update_last_login
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import CodePurpose
 from apps.accounts.serializers import (
@@ -36,6 +34,11 @@ from apps.accounts.services.codes import (
 )
 from apps.accounts.services.phone_accounts import get_or_create_phone_user
 from apps.accounts.throttles import CodeIpThrottle, CodeTargetThrottle
+from apps.accounts.views.responses import (
+    build_error_response,
+    build_token_response,
+    build_validation_error_response,
+)
 from core.sms import SmsError, send_sms
 
 
@@ -57,7 +60,7 @@ class PhoneCodeRequestView(APIView):
     def post(self, request):
         serializer = PhoneCodeRequestSerializer(data=request.data)
         if not serializer.is_valid():
-            return _build_validation_error_response(serializer)
+            return build_validation_error_response(serializer)
         phone = serializer.validated_data["phone"]
         try:
             code = issue_code(
@@ -66,7 +69,7 @@ class PhoneCodeRequestView(APIView):
                 ip_address=_read_client_ip(request),
             )
         except CodeResendTooSoonError as error:
-            return _build_error_response(
+            return build_error_response(
                 "code_resend_too_soon",
                 f"Новий код можна запросити через {error.retry_after_seconds} с.",
                 status.HTTP_429_TOO_MANY_REQUESTS,
@@ -74,7 +77,7 @@ class PhoneCodeRequestView(APIView):
             )
         except CodeRequestLimitError as error:
             minutes = math.ceil(error.retry_after_seconds / 60)
-            return _build_error_response(
+            return build_error_response(
                 "code_request_limit",
                 f"Забагато запитів коду. Спробуйте через {minutes} хв.",
                 status.HTTP_429_TOO_MANY_REQUESTS,
@@ -83,7 +86,7 @@ class PhoneCodeRequestView(APIView):
         try:
             send_sms(phone, _build_code_text(code))
         except SmsError:
-            return _build_error_response(
+            return build_error_response(
                 "sms_unavailable",
                 "Не вдалося надіслати SMS. Спробуйте трохи пізніше.",
                 status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -109,68 +112,38 @@ class PhoneLoginView(APIView):
     def post(self, request):
         serializer = PhoneLoginSerializer(data=request.data)
         if not serializer.is_valid():
-            return _build_validation_error_response(serializer)
+            return build_validation_error_response(serializer)
         phone = serializer.validated_data["phone"]
         code = serializer.validated_data["code"]
         try:
             verify_code(CodePurpose.PHONE_LOGIN, phone, code)
         except CodeInvalidError as error:
-            return _build_error_response(
+            return build_error_response(
                 "code_invalid",
                 f"Код не підходить. Залишилось спроб: {error.attempts_left}.",
                 status.HTTP_400_BAD_REQUEST,
                 attempts_left=error.attempts_left,
             )
         except CodeExpiredError:
-            return _build_error_response(
+            return build_error_response(
                 "code_expired",
                 f"Код діє {CODE_TTL_MINUTES} хв і вже не дійсний. Запросіть новий.",
                 status.HTTP_400_BAD_REQUEST,
             )
         except CodeAttemptsExceededError:
-            return _build_error_response(
+            return build_error_response(
                 "code_attempts_exceeded",
                 "Забагато хибних спроб. Запросіть новий код.",
                 status.HTTP_400_BAD_REQUEST,
             )
         user, is_new_user = get_or_create_phone_user(phone)
         if not user.is_active:
-            return _build_error_response(
+            return build_error_response(
                 "account_disabled",
                 "Обліковий запис вимкнено.",
                 status.HTTP_403_FORBIDDEN,
             )
-        update_last_login(None, user)
-        refresh = RefreshToken.for_user(user)
-        return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "is_new_user": is_new_user,
-            }
-        )
-
-
-def _build_error_response(code, detail, http_status, **extra):
-    body = {"code": code, "detail": detail, "fields": {}, **extra}
-    headers = {}
-    if "retry_after_seconds" in extra:
-        headers["Retry-After"] = str(extra["retry_after_seconds"])
-    return Response(body, status=http_status, headers=headers)
-
-
-def _build_validation_error_response(serializer):
-    fields = {
-        field_name: [str(message) for message in messages]
-        for field_name, messages in serializer.errors.items()
-    }
-    response = _build_error_response(
-        "validation_error",
-        "Перевірте введені дані.",
-        status.HTTP_400_BAD_REQUEST,
-    )
-    response.data["fields"] = fields
-    return response
+        return build_token_response(user, is_new_user)
 
 
 def _build_code_text(code):
