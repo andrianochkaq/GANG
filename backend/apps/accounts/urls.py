@@ -1,5 +1,11 @@
 from django.urls import path
 
+from .views.email import (
+    EmailCodeRequestView,
+    EmailLoginView,
+    EmailRegisterView,
+    EmailVerifyView,
+)
 from .views.phone import PhoneCodeRequestView, PhoneLoginView
 from .views.telegram import (
     TelegramLoginStartView,
@@ -8,6 +14,10 @@ from .views.telegram import (
 )
 
 urlpatterns = [
+    path("email-register/", EmailRegisterView.as_view(), name="email-register"),
+    path("email-code/", EmailCodeRequestView.as_view(), name="email-code"),
+    path("email-verify/", EmailVerifyView.as_view(), name="email-verify"),
+    path("email-login/", EmailLoginView.as_view(), name="email-login"),
     path("phone-code/", PhoneCodeRequestView.as_view(), name="phone-code"),
     path("phone-login/", PhoneLoginView.as_view(), name="phone-login"),
     path(
