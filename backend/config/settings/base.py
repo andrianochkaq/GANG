@@ -5,6 +5,7 @@ variables. The variable names are listed in ``.env.example``.
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third-party
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "drf_spectacular",
     # FreeCook apps
@@ -144,8 +146,20 @@ REST_FRAMEWORK = {
     },
 }
 
+# Sessions (docs/architecture.md, 5.4): a short access token and a long
+# refresh token. Every refresh hands out a new refresh token and revokes the
+# old one, and logout revokes the current one (token_blacklist app).
+ACCESS_TOKEN_LIFETIME_MINUTES = 15
+REFRESH_TOKEN_LIFETIME_DAYS = 30
+
 SIMPLE_JWT = {
     "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY", ""),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=ACCESS_TOKEN_LIFETIME_MINUTES),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=REFRESH_TOKEN_LIFETIME_DAYS),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    # Logging in notes the time (build_token_response); refreshing does not.
+    "UPDATE_LAST_LOGIN": False,
 }
 
 SPECTACULAR_SETTINGS = {
