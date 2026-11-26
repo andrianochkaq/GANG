@@ -70,3 +70,27 @@ def test_dev_email_reads_real_smtp_values(monkeypatch):
     assert dev_settings.EMAIL_HOST_PASSWORD == "mailer-password"
     assert dev_settings.EMAIL_USE_TLS is True
     assert dev_settings.DEFAULT_FROM_EMAIL == "hello@freecook.example"
+
+
+def test_dev_sms_defaults_to_the_console_backend(monkeypatch):
+    monkeypatch.delenv("SMS_BACKEND", raising=False)
+
+    dev_settings = load_dev_settings(monkeypatch)
+
+    assert dev_settings.SMS_BACKEND == "core.sms.ConsoleSmsBackend"
+
+
+def test_dev_sms_treats_an_empty_value_as_unset(monkeypatch):
+    monkeypatch.setenv("SMS_BACKEND", "")
+
+    dev_settings = load_dev_settings(monkeypatch)
+
+    assert dev_settings.SMS_BACKEND == "core.sms.ConsoleSmsBackend"
+
+
+def test_dev_sms_reads_the_backend_from_the_environment(monkeypatch):
+    monkeypatch.setenv("SMS_BACKEND", "core.sms.LocMemSmsBackend")
+
+    dev_settings = load_dev_settings(monkeypatch)
+
+    assert dev_settings.SMS_BACKEND == "core.sms.LocMemSmsBackend"
