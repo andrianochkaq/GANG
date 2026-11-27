@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import '../../i18n';
 import { AuthApiError } from '../../api/authErrors';
 import { resetAuthMock } from '../../api/authMock';
-import { fetchHealthStatus } from '../../api/health';
 import { profileApi } from '../../api/profile';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
@@ -21,14 +20,11 @@ vi.mock('../../api/profile', async () => {
   return { profileApi: createMockProfileApi(0) };
 });
 
-vi.mock('../../api/health', () => ({ fetchHealthStatus: vi.fn() }));
-
 describe('ProfileGate', () => {
   beforeEach(() => {
     resetAuthMock();
     useAuthStore.setState({ accessToken: null, status: 'unknown' });
     useThemeStore.setState({ themeId: 'white' });
-    vi.mocked(fetchHealthStatus).mockResolvedValue({ db: 'ok', redis: 'ok' });
   });
 
   afterEach(() => {
@@ -41,7 +37,7 @@ describe('ProfileGate', () => {
     await startSession(false);
     renderAppAt('/');
 
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
     await waitFor(() => expect(useThemeStore.getState().themeId).toBe('ocean'));
   });
 
@@ -49,7 +45,7 @@ describe('ProfileGate', () => {
     await startSession(false);
     const router = renderAppAt('/');
 
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
     expect(router.getPathname()).toBe('/');
   });
 
@@ -71,6 +67,6 @@ describe('ProfileGate', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Спробувати ще раз' }));
 
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
   });
 });

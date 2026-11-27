@@ -54,4 +54,10 @@
 
   --size-phone: 390px;
   --size-desktop: 1440px;
+
+  /* Navigation (tokens.json): bottom nav height, sidebar width and fill. */
+  --size-nav: 76px;
+  --size-sidebar: 272px;
+  --sidebar: var(--divider);
+  --radius-badge: 9px;
 }

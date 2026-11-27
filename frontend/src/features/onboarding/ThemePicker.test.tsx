@@ -1,10 +1,9 @@
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '../../i18n';
 import { AuthApiError } from '../../api/authErrors';
 import { createMockAuthApi, resetAuthMock } from '../../api/authMock';
-import { fetchHealthStatus } from '../../api/health';
 import { profileApi } from '../../api/profile';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
@@ -21,9 +20,16 @@ vi.mock('../../api/profile', async () => {
   return { profileApi: createMockProfileApi(0) };
 });
 
-vi.mock('../../api/health', () => ({ fetchHealthStatus: vi.fn() }));
-
 const COLOR_PATH = '/onboarding/color';
+
+// findByRole resolves as soon as the swatches are in the DOM, which can be
+// before ProfileGate's effect applies the saved colour. Flush effects first,
+// or that effect overwrites the colour the test just picked.
+async function findColour(name: string) {
+  const swatch = await screen.findByRole('radio', { name });
+  await act(async () => {});
+  return swatch;
+}
 
 function resetBrowser() {
   cleanup();
@@ -35,7 +41,6 @@ describe('ThemePicker (app colour after the first login)', () => {
   beforeEach(() => {
     resetAuthMock();
     resetBrowser();
-    vi.mocked(fetchHealthStatus).mockResolvedValue({ db: 'ok', redis: 'ok' });
   });
 
   afterEach(() => {
@@ -58,7 +63,7 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     renderAppAt('/');
 
-    fireEvent.click(await screen.findByRole('radio', { name: 'Сакура' }));
+    fireEvent.click(await findColour('Сакура'));
 
     expect(useThemeStore.getState().themeId).toBe('sakura');
     expect(screen.getByRole('radio', { name: 'Сакура' }).getAttribute('aria-checked')).toBe('true');
@@ -69,11 +74,11 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     const router = renderAppAt('/');
 
-    fireEvent.click(await screen.findByRole('radio', { name: 'Океан' }));
+    fireEvent.click(await findColour('Океан'));
     fireEvent.click(screen.getByRole('button', { name: 'Готово' }));
 
     await waitFor(() => expect(router.getPathname()).toBe('/'));
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
     await expect(profileApi.getProfile()).resolves.toEqual({
       themeColor: 'ocean',
       isOnboardingDone: true,
@@ -85,7 +90,7 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     const router = renderAppAt('/');
 
-    fireEvent.click(await screen.findByRole('radio', { name: 'Сакура' }));
+    fireEvent.click(await findColour('Сакура'));
     fireEvent.click(screen.getByRole('button', { name: 'Пропустити' }));
 
     await waitFor(() => expect(router.getPathname()).toBe('/'));
@@ -100,22 +105,22 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     renderAppAt('/');
     fireEvent.click(await screen.findByRole('button', { name: 'Готово' }));
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
 
     // A new page load, now on the colour screen's address.
     resetBrowser();
     const router = renderAppAt(COLOR_PATH);
 
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
     expect(router.getPathname()).toBe('/');
   });
 
   it('shows the chosen colour after logging in on a second browser', async () => {
     await startSession(true);
     renderAppAt('/');
-    fireEvent.click(await screen.findByRole('radio', { name: 'Бузок' }));
+    fireEvent.click(await findColour('Бузок'));
     fireEvent.click(screen.getByRole('button', { name: 'Готово' }));
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
 
     // The second browser has no session and starts with white.
     await createMockAuthApi(0).logout();
