@@ -231,3 +231,67 @@ button { cursor: pointer; }
   .fc-screen { max-width: none; padding: 0; gap: var(--space-24); }
   .fc-screen__title { font-size: 32px; line-height: 1.2; }
 }
+
+/* Icon button, small input and badge (docs/design-system/components.css) */
+.fc-iconbtn { box-sizing: border-box; width: var(--size-control-sm); height: var(--size-control-sm); flex-shrink: 0; border: none; border-radius: var(--radius-pill);
+  background: var(--surface); color: var(--text); display: inline-flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; }
+.fc-iconbtn--ghost { background: transparent; color: var(--text-muted); }
+.fc-iconbtn svg { width: 20px; height: 20px; }
+.fc-input--md { height: var(--size-control-md); border-radius: var(--radius-md); padding: 0 var(--space-14); }
+.fc-input--md:focus { padding: 0 calc(var(--space-14) - 1px); }
+.fc-badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: var(--space-4) 9px; border-radius: var(--radius-badge); white-space: nowrap; }
+.fc-badge--soft { background: var(--soft); color: var(--ink); }
+
+/* Fridge switcher (boards Fridges, DFridges): bottom sheet, centred dialog from 1024 px */
+.fc-switcher { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: flex-end; }
+.fc-switcher__scrim { position: absolute; inset: 0; background: var(--overlay); }
+.fc-switcher__dialog { position: relative; box-sizing: border-box; width: 100%; max-width: 560px; max-height: 92vh; margin: 0 auto; overflow-y: auto;
+  background: var(--bg); border-radius: var(--radius-hero) var(--radius-hero) 0 0; box-shadow: var(--shadow-sheet);
+  padding: var(--space-10) var(--space-20) calc(var(--space-28) + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: var(--space-14); }
+.fc-switcher__dialog:focus { outline: none; }
+.fc-switcher__handle { align-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--sheet-handle); }
+.fc-switcher__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); }
+.fc-switcher__heading { display: flex; flex-direction: column; gap: var(--space-4); }
+.fc-switcher__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 24px; line-height: 1.2; }
+.fc-switcher__text { margin: 0; font-size: 15px; color: var(--text-subtle); }
+.fc-switcher__status { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-10); margin: 0; font-size: 15px; color: var(--text-subtle); }
+.fc-switcher__status p { margin: 0; }
+.fc-switcher__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-14); }
+.fc-switcher__row { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-4); padding: var(--space-14); border: 2px solid transparent; border-radius: 20px; background: var(--surface); }
+.fc-switcher__row--current { border-color: var(--accent); }
+.fc-switcher__pick { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-12); padding: 0; border: none; background: transparent;
+  color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.fc-switcher__pick:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: var(--radius-md); }
+.fc-switcher__pick[disabled] { cursor: progress; opacity: 0.6; }
+.fc-switcher__icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-md); background: var(--neutral-tile); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; }
+.fc-switcher__row--current .fc-switcher__icon { background: var(--soft); color: var(--ink); }
+.fc-switcher__icon svg { width: 22px; height: 22px; }
+.fc-switcher__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.fc-switcher__name { font-size: 16px; font-weight: 600; overflow-wrap: break-word; }
+.fc-switcher__meta { font-size: 13px; color: var(--text-subtle); }
+.fc-switcher__form { display: flex; flex-direction: column; gap: var(--space-10); padding: var(--space-14); border-radius: 20px; background: var(--surface); }
+.fc-switcher__formlabel { font-size: 13px; font-weight: 600; color: var(--text-subtle); }
+.fc-switcher__formfoot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-8); }
+.fc-switcher__actions { display: flex; gap: var(--space-8); margin-left: auto; }
+.fc-switcher__actions .fc-btn--sm { height: var(--size-control-xs); border-radius: 12px; }
+.fc-switcher__cancel { background: var(--neutral-tile); color: var(--text); }
+.fc-switcher__new { box-sizing: border-box; height: 52px; display: flex; align-items: center; justify-content: center; gap: var(--space-8);
+  border: 1px dashed var(--border-dashed); border-radius: var(--radius-lg); background: transparent; color: var(--text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.fc-switcher__new:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fc-switcher__new svg { width: 18px; height: 18px; stroke-width: 2.5; }
+.fc-screen > .fc-fridgecard { max-width: 360px; }
+
+/* Below 360 px the «поточний» badge moves under the name, so names keep whole words. */
+@media (max-width: 359px) {
+  .fc-switcher__pick { flex-wrap: wrap; row-gap: var(--space-6); }
+  .fc-switcher__main { flex-basis: calc(100% - 56px); }
+  .fc-switcher__pick .fc-badge { margin-left: 56px; }
+}
+
+@media (min-width: 1024px) {
+  .fc-switcher { justify-content: center; align-items: center; padding: var(--space-16); }
+  .fc-switcher__dialog { max-width: 520px; max-height: calc(100vh - 32px); border-radius: var(--radius-hero); box-shadow: var(--shadow-dialog); padding: var(--space-28); }
+  .fc-switcher__handle { display: none; }
+  .fc-switcher__title { font-size: 26px; }
+}

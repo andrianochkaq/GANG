@@ -1,9 +1,11 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '../../i18n';
 import { createMockAuthApi, resetAuthMock } from '../../api/authMock';
+import type { Fridge } from '../../api/fridgesTypes';
 import type { Profile } from '../../api/profileTypes';
 import { renderAppAt } from '../../features/auth/authTestUtils';
 import { useAuthStore } from '../../store/authStore';
@@ -18,6 +20,16 @@ vi.mock('../../api/auth', async () => {
   const { createMockAuthApi } = await import('../../api/authMock');
   return { authApi: createMockAuthApi(0), isAuthMockEnabled: () => true };
 });
+
+// null: the list never arrives (still loading).
+const fridgesState: { value: Fridge[] | null } = { value: [] };
+
+vi.mock('../../api/fridges', () => ({
+  fridgesApi: {
+    listFridges: () =>
+      fridgesState.value ? Promise.resolve(fridgesState.value) : new Promise(() => undefined),
+  },
+}));
 
 vi.mock('../../api/profile', () => ({
   profileApi: {
@@ -44,6 +56,7 @@ describe('AppShell', () => {
     resetAuthMock();
     useAuthStore.setState({ accessToken: null, status: 'unknown' });
     profileState.value = { themeColor: 'white', isOnboardingDone: true };
+    fridgesState.value = [];
   });
 
   afterEach(cleanup);
@@ -86,7 +99,7 @@ describe('AppShell', () => {
     expect(router.getPathname()).toBe('/shopping');
 
     fireEvent.click(within(getNavs()[0]).getByRole('link', { name: /Ваш холодильник/ }));
-    expect(await screen.findByRole('heading', { level: 1, name: 'Холодильники' })).toBeTruthy();
+    expect(await screen.findByRole('dialog', { name: 'Ваші холодильники' })).toBeTruthy();
     expect(router.getPathname()).toBe('/fridges');
   });
 
@@ -122,24 +135,39 @@ describe('Sidebar', () => {
   afterEach(cleanup);
 
   function renderSidebar(props: Partial<Parameters<typeof Sidebar>[0]> = {}) {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
-      <MemoryRouter initialEntries={['/']}>
-        <Routes>
-          <Route path="*" element={<Sidebar items={getNavItems(true)} {...props} />} />
-        </Routes>
-      </MemoryRouter>,
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path="*" element={<Sidebar items={getNavItems(true)} {...props} />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
     );
   }
 
-  it('shows the current fridge and the open shopping count when known', () => {
-    renderSidebar({ fridge: { name: 'Наш холодильник', memberCount: 3 }, openShoppingCount: 5 });
+  it('shows the current fridge from the API and the open shopping count', async () => {
+    fridgesState.value = [
+      { id: 'a', name: 'Home', role: 'owner', memberCount: 1, productCount: 0, isCurrent: false },
+      {
+        id: 'b',
+        name: 'Наш холодильник',
+        role: 'member',
+        memberCount: 3,
+        productCount: 12,
+        isCurrent: true,
+      },
+    ];
+    renderSidebar({ openShoppingCount: 5 });
 
-    expect(screen.getByText('Наш холодильник')).toBeTruthy();
+    expect(await screen.findByText('Наш холодильник')).toBeTruthy();
     expect(screen.getByText('3 учасники · змінити')).toBeTruthy();
     expect(screen.getByText('5 покупок')).toBeTruthy();
   });
 
   it('shows a neutral card and no count before the data exists', () => {
+    fridgesState.value = null;
     renderSidebar();
 
     expect(screen.getByText('Ваш холодильник')).toBeTruthy();

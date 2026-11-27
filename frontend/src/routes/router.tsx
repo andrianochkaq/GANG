@@ -13,6 +13,8 @@ import ThemePicker from '../features/onboarding/ThemePicker';
 import { ONBOARDING_COLOR_PATH } from '../features/onboarding/onboardingPaths';
 import GuestRoute from './GuestRoute';
 import AppShell from '../components/layout/AppShell';
+import CurrentFridgeCard from '../features/fridges/CurrentFridgeCard';
+import FridgeSwitcher from '../features/fridges/FridgeSwitcher';
 import NotFoundPage from '../features/placeholder/NotFoundPage';
 import PlaceholderPage from '../features/placeholder/PlaceholderPage';
 import { APP_PATHS } from './paths';
@@ -44,7 +46,14 @@ export const routes: RouteObject[] = [
           {
             element: <AppShell />,
             children: [
-              { path: APP_PATHS.home, element: <PlaceholderPage titleKey="shell.nav.fridge" /> },
+              {
+                path: APP_PATHS.home,
+                element: (
+                  <PlaceholderPage titleKey="shell.nav.fridge">
+                    <CurrentFridgeCard />
+                  </PlaceholderPage>
+                ),
+              },
               { path: APP_PATHS.chef, element: <PlaceholderPage titleKey="shell.nav.chef" /> },
               {
                 path: APP_PATHS.calories,
@@ -52,7 +61,11 @@ export const routes: RouteObject[] = [
               },
               {
                 path: APP_PATHS.profile,
-                element: <PlaceholderPage titleKey="shell.nav.profile" />,
+                element: (
+                  <PlaceholderPage titleKey="shell.nav.profile">
+                    <CurrentFridgeCard />
+                  </PlaceholderPage>
+                ),
               },
               {
                 path: APP_PATHS.shopping,
@@ -60,7 +73,7 @@ export const routes: RouteObject[] = [
               },
               {
                 path: APP_PATHS.fridges,
-                element: <PlaceholderPage titleKey="shell.placeholder.fridges" />,
+                element: <FridgeSwitcher />,
               },
               {
                 path: APP_PATHS.recipes,
