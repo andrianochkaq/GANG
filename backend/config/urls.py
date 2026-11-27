@@ -8,6 +8,7 @@ from core.views import HealthCheckView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("apps.accounts.urls")),
+    path("api/", include("apps.fridges.urls")),
     path("api/me/", CurrentUserView.as_view(), name="me"),
     path("api/health/", HealthCheckView.as_view(), name="health"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

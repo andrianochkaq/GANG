@@ -124,6 +124,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=ThemeColor.WHITE,
     )
     is_onboarding_done = models.BooleanField(default=False)
+    # The fridge the person picked last. Empty until they pick one, and after
+    # that fridge is deleted or left; the API then falls back to another one.
+    last_fridge = models.ForeignKey(
+        "fridges.Fridge",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
