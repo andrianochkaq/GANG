@@ -99,6 +99,14 @@ describe('AppShell', () => {
     expect(getNavs()).toHaveLength(1);
   });
 
+  it('shows «not found» with the nav for an unknown path', async () => {
+    await renderLoggedInAt('/no-such-page');
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Сторінку не знайдено' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'На головну' }).getAttribute('href')).toBe('/');
+    expect(getNavs()).toHaveLength(2);
+  });
+
   it('hides Calories when the profile turns it off and leaves its route', async () => {
     profileState.value = { ...profileState.value, caloriesEnabled: false };
     const router = await renderLoggedInAt('/calories');

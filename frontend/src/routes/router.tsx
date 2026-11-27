@@ -13,6 +13,7 @@ import ThemePicker from '../features/onboarding/ThemePicker';
 import { ONBOARDING_COLOR_PATH } from '../features/onboarding/onboardingPaths';
 import GuestRoute from './GuestRoute';
 import AppShell from '../components/layout/AppShell';
+import NotFoundPage from '../features/placeholder/NotFoundPage';
 import PlaceholderPage from '../features/placeholder/PlaceholderPage';
 import { APP_PATHS } from './paths';
 import ProtectedRoute from './ProtectedRoute';
@@ -67,6 +68,8 @@ export const routes: RouteObject[] = [
               },
               // The backend check from FC-003, kept for local setup; not in the nav.
               { path: APP_PATHS.health, element: <HealthStatusPage /> },
+              // Unknown paths: logged-out users still go to /login first.
+              { path: '*', element: <NotFoundPage /> },
             ],
           },
         ],
