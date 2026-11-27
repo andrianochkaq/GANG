@@ -31,6 +31,18 @@ const errorBodySchema = z.object({
   fields: z.record(z.unknown()).optional(),
 });
 
+// validation_error carries the reason per field, e.g. a password Django
+// finds too common; the first one tells the person more than "check input".
+function readFirstFieldMessage(fields: Record<string, unknown> | undefined): string | undefined {
+  for (const messages of Object.values(fields ?? {})) {
+    const first = Array.isArray(messages) ? messages[0] : messages;
+    if (typeof first === 'string' && first) {
+      return first;
+    }
+  }
+  return undefined;
+}
+
 export class AuthApiError extends Error {
   readonly code: string;
   readonly detail: string | undefined;
@@ -61,11 +73,14 @@ export function toAuthApiError(error: unknown): AuthApiError {
   }
   const { status, data } = error.response;
   const body = errorBodySchema.safeParse(data);
-  const detail = body.success ? body.data.detail : undefined;
-  if (status === HTTP_TOO_MANY_REQUESTS) {
+  const code = body.success && body.data.code ? body.data.code : undefined;
+  const fieldMessage = body.success ? readFirstFieldMessage(body.data.fields) : undefined;
+  const detail = fieldMessage ?? (body.success ? body.data.detail : undefined);
+  // A 429 with a code (code_resend_too_soon, code_request_limit) keeps it, so
+  // its detail can say how long to wait; a bare DRF throttle is "throttled".
+  if (status === HTTP_TOO_MANY_REQUESTS && !code) {
     return new AuthApiError('throttled', { detail, status });
   }
-  const code = body.success && body.data.code ? body.data.code : undefined;
   if (code) {
     return new AuthApiError(code, { detail, status });
   }

@@ -9,7 +9,8 @@ import AuthIcon from './AuthIcon';
 import TheAuthLayout from './TheAuthLayout';
 import { useFinishLogin } from './useFinishLogin';
 
-// architecture.md 7.1: the site polls the login request every 2 s.
+// architecture.md 7.1: the site polls the login request every 2 s, unless
+// the backend's start answer names another interval.
 export const TELEGRAM_POLL_INTERVAL_MS = 2000;
 
 const LOGIN_PATH = '/login';
@@ -39,7 +40,7 @@ export default function TelegramLoginPage() {
     enabled: Boolean(request),
     refetchInterval: (query) =>
       query.state.data?.status === 'pending' || !query.state.data
-        ? TELEGRAM_POLL_INTERVAL_MS
+        ? (request?.pollIntervalMs ?? TELEGRAM_POLL_INTERVAL_MS)
         : false,
     refetchOnWindowFocus: true,
     gcTime: 0,
