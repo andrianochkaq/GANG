@@ -9,7 +9,6 @@ import {
   createMockAuthApi,
   resetAuthMock,
 } from '../../api/authMock';
-import { fetchHealthStatus } from '../../api/health';
 import { useAuthStore } from '../../store/authStore';
 import { renderAppAt } from './authTestUtils';
 
@@ -23,8 +22,6 @@ vi.mock('../../api/profile', async () => {
   return { profileApi: createMockProfileApi(0) };
 });
 
-vi.mock('../../api/health', () => ({ fetchHealthStatus: vi.fn() }));
-
 function typeCode(code: string) {
   fireEvent.paste(screen.getByLabelText('Цифра 1'), { clipboardData: { getData: () => code } });
 }
@@ -33,7 +30,6 @@ describe('auth screens', () => {
   beforeEach(() => {
     resetAuthMock();
     useAuthStore.setState({ accessToken: null, status: 'unknown' });
-    vi.mocked(fetchHealthStatus).mockResolvedValue({ db: 'ok', redis: 'ok' });
   });
 
   afterEach(cleanup);
@@ -48,7 +44,7 @@ describe('auth screens', () => {
     // A login before the reload leaves the refresh cookie (here: the mock flag).
     await createMockAuthApi(0).loginEmail('marta@example.com', 'freecook26');
     renderAppAt('/');
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
     expect(useAuthStore.getState().status).toBe('authenticated');
   });
 
@@ -56,7 +52,7 @@ describe('auth screens', () => {
     // The browser's back button after a login lands on /login again.
     await createMockAuthApi(0).loginEmail('marta@example.com', 'freecook26');
     const router = renderAppAt('/login');
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
     expect(router.getPathname()).toBe('/');
   });
 
@@ -80,7 +76,7 @@ describe('auth screens', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Увійти' }));
 
     await waitFor(() => expect(router.getPathname()).toBe('/'));
-    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
   });
 
   it('registers by email and confirms the code', async () => {

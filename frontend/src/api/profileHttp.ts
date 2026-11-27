@@ -14,11 +14,19 @@ const profileSchema = z.object({
     .string()
     .transform((value): ThemeId => (isThemeId(value) ? value : DEFAULT_THEME_ID)),
   is_onboarding_done: z.boolean(),
+  calories_enabled: z.boolean().optional(),
 });
 
 export function toProfile(data: unknown): Profile {
   const parsed = profileSchema.parse(data);
-  return { themeColor: parsed.theme_color, isOnboardingDone: parsed.is_onboarding_done };
+  const profile: Profile = {
+    themeColor: parsed.theme_color,
+    isOnboardingDone: parsed.is_onboarding_done,
+  };
+  if (parsed.calories_enabled !== undefined) {
+    profile.caloriesEnabled = parsed.calories_enabled;
+  }
+  return profile;
 }
 
 // PATCH only sends the fields that changed, in the API's snake_case.

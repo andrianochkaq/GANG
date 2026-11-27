@@ -197,5 +197,32 @@
       "loadError": "Не вдалося завантажити профіль. Перевірте інтернет і спробуйте ще раз.",
       "retry": "Спробувати ще раз"
     }
+  },
+  "shell": {
+    "navLabel": "Основна навігація",
+    "nav": {
+      "fridge": "Холодильник",
+      "chef": "AI-кухар",
+      "calories": "Калорії",
+      "profile": "Профіль",
+      "shopping": "Покупки"
+    },
+    "fridgeCard": {
+      "fallbackName": "Ваш холодильник",
+      "change": "змінити",
+      "members_one": "{{count}} учасник · змінити",
+      "members_few": "{{count}} учасники · змінити",
+      "members_many": "{{count}} учасників · змінити",
+      "members_other": "{{count}} учасника · змінити"
+    },
+    "shoppingCount_one": "{{count}} покупка",
+    "shoppingCount_few": "{{count}} покупки",
+    "shoppingCount_many": "{{count}} покупок",
+    "shoppingCount_other": "{{count}} покупки",
+    "placeholder": {
+      "text": "Цей розділ скоро з’явиться.",
+      "fridges": "Холодильники",
+      "recipes": "Щоденник рецептів"
+    }
   }
 }
