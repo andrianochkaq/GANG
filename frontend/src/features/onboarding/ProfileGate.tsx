@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
@@ -10,6 +10,9 @@ import { useProfile } from './useProfile';
 // Sits inside ProtectedRoute. Loads /api/me/ on every login (any device),
 // applies the saved theme, and sends an account that has not finished
 // onboarding to the colour screen. Once it is done the screen is closed.
+// The saved colour is applied in a layout effect, so it lands in the same
+// commit as the profile and can never overwrite a colour the user picks
+// a moment later.
 export default function ProfileGate() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -18,7 +21,7 @@ export default function ProfileGate() {
   const profile = profileQuery.data;
   const savedThemeId = profile?.themeColor;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (savedThemeId) {
       setThemeId(savedThemeId);
     }
