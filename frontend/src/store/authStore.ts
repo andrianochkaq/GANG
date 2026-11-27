@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 
-// unknown: not checked yet after a page load; the refresh cookie may still
-// hold a session. The access token is kept in memory only (architecture.md, D4).
+// unknown: not checked yet after a page load; the stored refresh token may
+// still hold a session (refreshTokenStorage.ts). The access token is kept in
+// memory only.
 export type AuthStatus = 'unknown' | 'authenticated' | 'anonymous';
 
 type AuthState = {
