@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '../../i18n';
@@ -21,6 +21,15 @@ vi.mock('../../api/profile', async () => {
 });
 
 const COLOR_PATH = '/onboarding/color';
+
+// findByRole resolves as soon as the swatches are in the DOM, which can be
+// before ProfileGate's effect applies the saved colour. Flush effects first,
+// or that effect overwrites the colour the test just picked.
+async function findColour(name: string) {
+  const swatch = await screen.findByRole('radio', { name });
+  await act(async () => {});
+  return swatch;
+}
 
 function resetBrowser() {
   cleanup();
@@ -54,7 +63,7 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     renderAppAt('/');
 
-    fireEvent.click(await screen.findByRole('radio', { name: 'Сакура' }));
+    fireEvent.click(await findColour('Сакура'));
 
     expect(useThemeStore.getState().themeId).toBe('sakura');
     expect(screen.getByRole('radio', { name: 'Сакура' }).getAttribute('aria-checked')).toBe('true');
@@ -65,7 +74,7 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     const router = renderAppAt('/');
 
-    fireEvent.click(await screen.findByRole('radio', { name: 'Океан' }));
+    fireEvent.click(await findColour('Океан'));
     fireEvent.click(screen.getByRole('button', { name: 'Готово' }));
 
     await waitFor(() => expect(router.getPathname()).toBe('/'));
@@ -81,7 +90,7 @@ describe('ThemePicker (app colour after the first login)', () => {
     await startSession(true);
     const router = renderAppAt('/');
 
-    fireEvent.click(await screen.findByRole('radio', { name: 'Сакура' }));
+    fireEvent.click(await findColour('Сакура'));
     fireEvent.click(screen.getByRole('button', { name: 'Пропустити' }));
 
     await waitFor(() => expect(router.getPathname()).toBe('/'));
@@ -109,7 +118,7 @@ describe('ThemePicker (app colour after the first login)', () => {
   it('shows the chosen colour after logging in on a second browser', async () => {
     await startSession(true);
     renderAppAt('/');
-    fireEvent.click(await screen.findByRole('radio', { name: 'Бузок' }));
+    fireEvent.click(await findColour('Бузок'));
     fireEvent.click(screen.getByRole('button', { name: 'Готово' }));
     expect(await screen.findByRole('heading', { name: 'Холодильник' })).toBeTruthy();
 
