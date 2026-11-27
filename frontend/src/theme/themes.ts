@@ -58,7 +58,7 @@ const THEME_SWATCHES: ReadonlyArray<{ id: ThemeId; swatch: string }> = [
   { id: 'fog', swatch: '#c8c8c8' },
 ];
 
-// Білий is special: a warm neutral instead of a tint of pure white.
+// White is special: a warm neutral instead of a tint of pure white.
 const WHITE_SWATCH = '#ffffff';
 const WHITE_TOKENS: ThemeTokens = {
   bg: '#f7f5f0',

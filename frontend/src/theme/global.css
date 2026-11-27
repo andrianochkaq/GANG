@@ -122,6 +122,24 @@ button { cursor: pointer; }
 .fc-auth__resend button { border: none; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--ink); }
 .fc-auth__wait { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-14) var(--space-16); border-radius: var(--radius-xl); background: var(--surface); font-size: 15px; }
 
+/* Colour picker (docs/design-system/components/ColorPicker.md) and the live preview card of the colour screen (Color3 / DColor). */
+.fc-palette { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-8) var(--space-4); }
+.fc-swatch { border: none; background: transparent; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; color: var(--text-secondary); }
+.fc-swatch__ring { box-sizing: border-box; width: 46px; height: 46px; border-radius: 23px; border: 2px solid transparent; padding: 3px; display: flex; }
+.fc-swatch__dot { flex: 1; border-radius: 20px; box-shadow: inset 0 0 0 1px rgba(38, 37, 35, 0.12); }
+.fc-swatch[aria-checked="true"] .fc-swatch__ring { border-color: var(--text); }
+.fc-swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
+.fc-themepreview__visual { display: flex; align-items: center; gap: var(--space-14); padding: var(--space-14); border-radius: var(--radius-lg); background: var(--bg); }
+.fc-themepreview__art { flex-shrink: 0; width: 72px; height: 88px; border-radius: var(--radius-md); background: var(--soft); display: flex; align-items: center; justify-content: center; }
+.fc-themepreview__art img { width: 44px; height: 64px; object-fit: contain; }
+.fc-themepreview__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-8); }
+.fc-themepreview__bar { display: block; height: var(--space-10); border-radius: var(--radius-bar); background: var(--soft); }
+.fc-themepreview__bar--short { width: 60%; }
+.fc-themepreview__button { align-self: flex-start; margin-top: var(--space-4); height: var(--size-control-xs); padding: 0 var(--space-16); border-radius: var(--radius-sm);
+  background: var(--accent); color: var(--on-accent); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; }
+.fc-themepreview__chosen { margin: 0; font-size: 14px; color: var(--text-secondary); }
+.fc-themepreview__chosen b { color: var(--text); }
+
 @media (prefers-reduced-motion: no-preference) {
   .fc-auth__spinner { animation: fc-spin 1s linear infinite; }
 }
@@ -152,4 +170,64 @@ button { cursor: pointer; }
   .fc-auth__methodname { flex: none; }
   .fc-auth__methodhint { display: none; }
   .fc-auth__legal { margin-top: 0; }
+}
+
+/* App shell (FC-203). Navigation classes from docs/design-system/components.css;
+   frames and breakpoints from 02-layout-and-screens.md: below 1024 px a mobile
+   frame with BottomNav (content max 560 px from 768 px), from 1024 px the
+   desktop frame with Sidebar. Boards: Nav3, DSide. */
+.fc-nav { box-sizing: border-box; height: var(--size-nav); display: flex; padding: 0 var(--space-8); background: var(--surface); border-top: 1px solid var(--line); }
+.fc-navitem { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4); font-size: 12px; font-weight: 500;
+  color: var(--text-subtle); text-decoration: none; }
+.fc-navitem__pill { width: 56px; height: 30px; border-radius: 15px; display: flex; align-items: center; justify-content: center; }
+.fc-navitem svg { width: 22px; height: 22px; }
+.fc-navitem[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.fc-navitem[aria-current="page"] .fc-navitem__pill { background: var(--soft); }
+:where(.fc-navitem, .fc-sideitem, .fc-fridgecard, .fc-sidebar__shopping):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.fc-sidebar { box-sizing: border-box; width: 100%; max-width: var(--size-sidebar); min-width: 220px; background: var(--sidebar); padding: var(--space-24) var(--space-16);
+  display: flex; flex-direction: column; gap: var(--space-28); }
+.fc-sidebar__brand { display: flex; align-items: center; gap: var(--space-10); padding: 0 var(--space-8); font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--text); text-decoration: none; }
+.fc-sidebar__logo { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--soft); color: var(--ink); display: flex; align-items: center; justify-content: center; }
+.fc-sidebar__logo svg { width: 20px; height: 20px; }
+.fc-sidebar__items { display: flex; flex-direction: column; gap: var(--space-4); }
+.fc-sideitem { height: 48px; padding: 0 var(--space-14); border-radius: var(--radius-md); display: flex; align-items: center; gap: var(--space-12); font-size: 15px; font-weight: 500;
+  color: var(--text-muted); text-decoration: none; }
+.fc-sideitem svg { width: 22px; height: 22px; }
+.fc-sideitem[aria-current="page"] { background: var(--soft); color: var(--ink); font-weight: 600; }
+.fc-fridgecard { padding: var(--space-14); border-radius: var(--radius-xl); background: var(--surface); display: flex; align-items: center; gap: var(--space-10); text-decoration: none; color: var(--text); }
+.fc-fridgecard img { width: 30px; height: 44px; object-fit: contain; }
+.fc-fridgecard__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.fc-fridgecard__name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fc-fridgecard__meta { font-size: 12px; color: var(--text-subtle); }
+.fc-fridgecard svg { width: 16px; height: 16px; color: var(--text-subtle); flex-shrink: 0; }
+.fc-sidebar__shopping { box-sizing: border-box; height: var(--size-control-sm); padding: 0 var(--space-14); border-radius: var(--radius-md); border: 1px solid var(--border-input);
+  display: flex; align-items: center; gap: var(--space-10); text-decoration: none; font-size: 14px; font-weight: 600; color: var(--text); }
+.fc-sidebar__shopping[aria-current="page"] { background: var(--soft); border-color: transparent; color: var(--ink); }
+.fc-sidebar__shopping svg { width: 18px; height: 18px; }
+.fc-sidebar__shopping > span:first-of-type { flex: 1; }
+.fc-sidebar__count { font-size: 12px; font-weight: 600; padding: 2px var(--space-8); border-radius: var(--radius-badge); background: var(--soft); color: var(--ink); }
+
+.fc-shell { box-sizing: border-box; min-height: 100vh; background: var(--bg); }
+.fc-shell__sidebar { display: none; }
+.fc-shell__main { box-sizing: border-box; min-width: 0; padding-bottom: calc(var(--size-nav) + env(safe-area-inset-bottom, 0px)); }
+.fc-shell__main--subscreen { box-sizing: border-box; min-width: 0; }
+.fc-shell__bottomnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--surface); }
+
+/* Tab root frame: bg, 16 px top / 20 px sides, 12 px gaps. */
+.fc-screen { box-sizing: border-box; width: 100%; max-width: var(--size-phone); margin: 0 auto; padding: var(--space-16) var(--space-20); display: flex; flex-direction: column; gap: var(--space-12); }
+.fc-screen__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 22px; line-height: 1.15; }
+.fc-screen__text { margin: 0; font-size: 15px; line-height: 1.45; color: var(--text-subtle); }
+
+@media (min-width: 768px) {
+  .fc-screen { max-width: 560px; }
+}
+
+@media (min-width: 1024px) {
+  .fc-shell { display: flex; align-items: stretch; }
+  .fc-shell__sidebar { display: flex; flex: 0 1 var(--size-sidebar); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .fc-shell__main, .fc-shell__main--subscreen { flex: 1; padding: var(--space-24) var(--space-40); }
+  .fc-shell__bottomnav { display: none; }
+  .fc-screen { max-width: none; padding: 0; gap: var(--space-24); }
+  .fc-screen__title { font-size: 32px; line-height: 1.2; }
 }

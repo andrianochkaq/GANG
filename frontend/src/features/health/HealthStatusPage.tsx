@@ -8,7 +8,7 @@ export default function HealthStatusPage() {
   const { data, isPending, isError } = useHealthStatus();
 
   return (
-    <main className="fc-page">
+    <section className="fc-screen">
       <h1 className="fc-header__title">{t('app.name')}</h1>
       {isPending && (
         <div className="fc-skeleton" aria-busy="true">
@@ -32,6 +32,6 @@ export default function HealthStatusPage() {
           <HealthStatusPageRow label={t('health.redis')} status={data.redis} />
         </section>
       )}
-    </main>
+    </section>
   );
 }

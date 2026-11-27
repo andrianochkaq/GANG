@@ -7,7 +7,7 @@ type ThemeState = {
   setThemeId: (themeId: ThemeId) => void;
 };
 
-// The choice will be loaded from the profile once accounts land (FC-202).
+// The saved choice is loaded from /api/me/ by ProfileGate after every login.
 export const useThemeStore = create<ThemeState>((set) => ({
   themeId: DEFAULT_THEME_ID,
   setThemeId: (themeId) => set({ themeId }),

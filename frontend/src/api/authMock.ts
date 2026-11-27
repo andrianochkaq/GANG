@@ -1,5 +1,6 @@
 import { AuthApiError } from './authErrors';
 import type { AuthApi, TelegramLoginStatus } from './authTypes';
+import { resetProfileMock, startMockOnboarding } from './profileMock';
 
 // In-memory stand-in for the auth backend (FC-103 … FC-107), switched on with
 // VITE_AUTH_MOCK=true. Its rules mirror FC-102: 6-digit codes, 5 attempts,
@@ -16,7 +17,8 @@ const MAX_CODE_ATTEMPTS = 5;
 const MAX_CODE_REQUESTS = 5;
 const TELEGRAM_REQUEST_TTL_MS = 5 * 60 * 1000;
 const RESPONSE_DELAY_MS = 400;
-// Stands in for the HttpOnly refresh cookie so a reload keeps the session.
+const MOCK_TELEGRAM_POLL_INTERVAL_MS = 2000;
+// Stands in for the stored refresh token so a reload keeps the session.
 const SESSION_STORAGE_KEY = 'fc-mock-refresh';
 
 type MockState = {
@@ -42,6 +44,7 @@ let hasMemorySession = false;
 export function resetAuthMock(): void {
   state = createState();
   writeSessionFlag(false);
+  resetProfileMock();
 }
 
 function wait(delayMs: number): Promise<void> {
@@ -109,6 +112,8 @@ export function createMockAuthApi(delayMs = RESPONSE_DELAY_MS): AuthApi {
     async verifyEmail(email, code) {
       await wait(delayMs);
       checkCode(email, code);
+      // A confirmed registration is a new account: it still has to pick its colour.
+      startMockOnboarding();
       return issueTokens();
     },
     async resendEmailCode(email) {
@@ -144,6 +149,7 @@ export function createMockAuthApi(delayMs = RESPONSE_DELAY_MS): AuthApi {
         token,
         deepLink: `https://t.me/freecook_bot?start=${token}`,
         expiresAt: new Date(expiresAt).toISOString(),
+        pollIntervalMs: MOCK_TELEGRAM_POLL_INTERVAL_MS,
       };
     },
     async getTelegramLoginStatus(token): Promise<TelegramLoginStatus> {
