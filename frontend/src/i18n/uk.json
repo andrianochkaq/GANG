@@ -221,7 +221,6 @@
     "shoppingCount_other": "{{count}} покупки",
     "placeholder": {
       "text": "Цей розділ скоро з’явиться.",
-      "fridges": "Холодильники",
       "recipes": "Щоденник рецептів"
     },
     "notFound": {
@@ -229,5 +228,34 @@
       "text": "Можливо, посилання застаріло або в адресі помилка.",
       "home": "На головну"
     }
+  },
+  "fridges": {
+    "title": "Ваші холодильники",
+    "text": "Оберіть, з яким працювати зараз.",
+    "close": "Закрити",
+    "current": "поточний",
+    "rename": "Перейменувати «{{name}}»",
+    "newName": "Нова назва",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "newFridge": "Новий холодильник",
+    "createLabel": "Назва нового холодильника",
+    "create": "Створити",
+    "nameRequired": "Введіть назву холодильника.",
+    "onlyYou": "Лише ви",
+    "members_one": "{{count}} учасник",
+    "members_few": "{{count}} учасники",
+    "members_many": "{{count}} учасників",
+    "members_other": "{{count}} учасника",
+    "products_one": "{{count}} продукт",
+    "products_few": "{{count}} продукти",
+    "products_many": "{{count}} продуктів",
+    "products_other": "{{count}} продукту",
+    "meta": "{{members}} · {{products}}",
+    "loading": "Завантажуємо холодильники…",
+    "loadError": "Не вдалося завантажити холодильники.",
+    "retry": "Спробувати ще раз",
+    "selectError": "Не вдалося перемкнути холодильник. Спробуйте ще раз.",
+    "mockDefaultName": "Мій холодильник"
   }
 }

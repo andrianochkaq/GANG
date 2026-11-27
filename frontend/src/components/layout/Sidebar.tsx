@@ -1,26 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
-import mascotUrl from '../../assets/mascot-fridge.png';
+import CurrentFridgeCard from '../../features/fridges/CurrentFridgeCard';
 import { APP_PATHS } from '../../routes/paths';
 import NavIcon from './NavIcon';
 import { isPathActive, type NavItem } from './navItems';
 
-export type SidebarFridge = {
-  name: string;
-  memberCount: number;
-};
-
 type SidebarProps = {
   items: NavItem[];
-  // Filled once the fridge (FC-206) and shopping (FC-402) APIs exist; until
-  // then the card shows a neutral title and the count stays hidden.
-  fridge?: SidebarFridge;
+  // Filled once the shopping API (FC-402) exists; until then it stays hidden.
   openShoppingCount?: number;
 };
 
 // DSide: wordmark, the four tab roots, the current-fridge card and Shopping.
-export default function Sidebar({ items, fridge, openShoppingCount }: SidebarProps) {
+export default function Sidebar({ items, openShoppingCount }: SidebarProps) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
 
@@ -47,24 +40,7 @@ export default function Sidebar({ items, fridge, openShoppingCount }: SidebarPro
         ))}
       </div>
 
-      <Link
-        to={APP_PATHS.fridges}
-        className="fc-fridgecard"
-        aria-current={isPathActive(APP_PATHS.fridges, pathname) ? 'page' : undefined}
-      >
-        <img src={mascotUrl} alt="" />
-        <span className="fc-fridgecard__text">
-          <span className="fc-fridgecard__name">
-            {fridge ? fridge.name : t('shell.fridgeCard.fallbackName')}
-          </span>
-          <span className="fc-fridgecard__meta">
-            {fridge
-              ? t('shell.fridgeCard.members', { count: fridge.memberCount })
-              : t('shell.fridgeCard.change')}
-          </span>
-        </span>
-        <NavIcon name="chevron" />
-      </Link>
+      <CurrentFridgeCard />
 
       <Link
         to={APP_PATHS.shopping}

@@ -1,8 +1,16 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Stands in for a screen whose ticket has not landed yet, so every
 // navigation item already opens its own route (FC-203).
-export default function PlaceholderPage({ titleKey }: { titleKey: string }) {
+// children: entry points that already work there (the fridge card, FC-206).
+export default function PlaceholderPage({
+  titleKey,
+  children,
+}: {
+  titleKey: string;
+  children?: ReactNode;
+}) {
   const { t } = useTranslation();
 
   return (
@@ -11,6 +19,7 @@ export default function PlaceholderPage({ titleKey }: { titleKey: string }) {
         {t(titleKey)}
       </h1>
       <p className="fc-screen__text">{t('shell.placeholder.text')}</p>
+      {children}
     </section>
   );
 }

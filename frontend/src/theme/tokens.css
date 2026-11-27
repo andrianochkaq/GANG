@@ -60,4 +60,10 @@
   --size-sidebar: 272px;
   --sidebar: var(--divider);
   --radius-badge: 9px;
+  /* Bottom sheet and desktop dialog (FC-206). */
+  --overlay: rgba(38, 37, 35, 0.42);
+  --shadow-sheet: 0 -12px 40px rgba(38, 37, 35, 0.18);
+  --shadow-dialog: 0 24px 60px rgba(38, 37, 35, 0.25);
+  --sheet-handle: #d6d0c4;
+  --border-dashed: #b9b2a5;
 }
