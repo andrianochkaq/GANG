@@ -10,6 +10,7 @@ export type TelegramLoginRequest = {
   token: string;
   deepLink: string;
   expiresAt: string;
+  pollIntervalMs: number;
 };
 
 export type TelegramLoginStatus =
@@ -17,8 +18,8 @@ export type TelegramLoginStatus =
   | { status: 'expired' }
   | { status: 'confirmed'; access: string; isNewUser: boolean };
 
-// One contract for both the real backend (FC-103 … FC-107) and the mock used
-// until those endpoints land. Screens only talk to this interface.
+// One contract for both the real backend (FC-103 … FC-107) and the mock
+// (VITE_AUTH_MOCK=true). Screens only talk to this interface.
 export interface AuthApi {
   registerEmail(email: string, password: string): Promise<void>;
   verifyEmail(email: string, code: string): Promise<SessionTokens>;

@@ -20,8 +20,36 @@ describe('toAuthApiError', () => {
     expect(error.status).toBe(400);
   });
 
-  it('treats every 429 as throttled', () => {
+  it('treats a 429 without a code as throttled', () => {
     expect(toAuthApiError(axiosErrorWith(429, { detail: 'Зачекайте' })).code).toBe('throttled');
+  });
+
+  it('keeps the code of a 429 so its detail says how long to wait', () => {
+    const error = toAuthApiError(
+      axiosErrorWith(429, {
+        code: 'code_resend_too_soon',
+        detail: 'Новий код можна запросити через 42 с.',
+        fields: {},
+        retry_after_seconds: 42,
+      }),
+    );
+    expect(error.code).toBe('code_resend_too_soon');
+    expect(getAuthErrorMessageKey(error)).toEqual({
+      key: 'auth.errors.detail',
+      detail: 'Новий код можна запросити через 42 с.',
+    });
+  });
+
+  it('takes the first field message of a validation error as its detail', () => {
+    const error = toAuthApiError(
+      axiosErrorWith(400, {
+        code: 'validation_error',
+        detail: 'Перевірте введені дані.',
+        fields: { password: ['Цей пароль надто поширений.'] },
+      }),
+    );
+    expect(error.code).toBe('validation_error');
+    expect(error.detail).toBe('Цей пароль надто поширений.');
   });
 
   it('reports a network error when there is no response', () => {

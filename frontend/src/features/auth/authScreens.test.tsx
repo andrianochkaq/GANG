@@ -52,6 +52,14 @@ describe('auth screens', () => {
     expect(useAuthStore.getState().status).toBe('authenticated');
   });
 
+  it('sends a logged-in user from the login screen on to the app', async () => {
+    // The browser's back button after a login lands on /login again.
+    await createMockAuthApi(0).loginEmail('marta@example.com', 'freecook26');
+    const router = renderAppAt('/login');
+    expect(await screen.findByText('Стан сервера')).toBeTruthy();
+    expect(router.getPathname()).toBe('/');
+  });
+
   it('shows a Ukrainian error for a wrong password', async () => {
     renderAppAt('/login');
     fireEvent.change(await screen.findByLabelText('Електронна пошта'), {

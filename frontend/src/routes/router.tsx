@@ -11,14 +11,22 @@ import HealthStatusPage from '../features/health/HealthStatusPage';
 import ProfileGate from '../features/onboarding/ProfileGate';
 import ThemePicker from '../features/onboarding/ThemePicker';
 import { ONBOARDING_COLOR_PATH } from '../features/onboarding/onboardingPaths';
+import GuestRoute from './GuestRoute';
 import ProtectedRoute from './ProtectedRoute';
 
 export const routes: RouteObject[] = [
-  { path: '/login', element: <LoginPage /> },
-  { path: '/login/phone', element: <PhoneLoginPage /> },
-  { path: '/login/telegram', element: <TelegramLoginPage /> },
-  { path: '/register/verify', element: <EmailVerifyPage /> },
-  { path: '/forgot-password', element: <ForgotPasswordPage /> },
+  {
+    // Logged-in users skip these screens (GuestRoute.tsx).
+    element: <GuestRoute />,
+    children: [
+      { path: '/login', element: <LoginPage /> },
+      { path: '/login/phone', element: <PhoneLoginPage /> },
+      { path: '/login/telegram', element: <TelegramLoginPage /> },
+      { path: '/register/verify', element: <EmailVerifyPage /> },
+      { path: '/forgot-password', element: <ForgotPasswordPage /> },
+    ],
+  },
+  // Outside GuestRoute: the emailed link must work in any tab, logged in or not.
   { path: '/reset-password', element: <ResetPasswordPage /> },
   {
     element: <ProtectedRoute />,
