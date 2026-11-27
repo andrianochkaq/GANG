@@ -8,7 +8,7 @@ import { useAuthStore } from '../store/authStore';
 export const LOGIN_PATH = '/login';
 
 // After a reload the access token is gone (it lives in memory), so the
-// refresh cookie is tried once before deciding the user is logged out.
+// stored refresh token is tried once before deciding the user is logged out.
 export default function ProtectedRoute() {
   const { t } = useTranslation();
   const location = useLocation();
