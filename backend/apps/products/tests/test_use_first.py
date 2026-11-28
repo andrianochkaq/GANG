@@ -90,9 +90,7 @@ def test_full_order_expired_soon_opened_then_oldest(fridge, dairy):
     assert set(names_of(found)[4:]) == {"Нове", "Далеко"}
 
 
-def test_item_expiring_later_than_three_days_but_opened_counts_as_opened(
-    fridge, dairy
-):
+def test_item_expiring_later_than_three_days_but_opened_counts_as_opened(fridge, dairy):
     now = timezone.now()
     make_item(fridge, dairy, name="Просто", created_at=now - timedelta(days=9))
     make_item(
