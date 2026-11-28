@@ -204,30 +204,43 @@ def _get_fridge(fridge_id):
     return Fridge.objects.get(pk=fridge_id)
 
 
+def flatten_error_details(errors, path="", fields=None):
+    """Turn nested serializer errors into ``{"items.1.quantity": [...]}``.
+
+    The errors of a list of lines come as a list with one entry per line or
+    as a dict keyed by the line number, depending on the DRF version; both
+    give the same names. Errors of the list itself stay under its name.
+    """
+    fields = {} if fields is None else fields
+    if isinstance(errors, dict):
+        for key, value in errors.items():
+            flatten_error_details(value, _join_error_path(path, key), fields)
+    elif isinstance(errors, list):
+        for position, entry in enumerate(errors):
+            if isinstance(entry, str):
+                fields.setdefault(path, []).append(str(entry))
+            else:
+                entry_path = _join_error_path(path, position)
+                flatten_error_details(entry, entry_path, fields)
+    else:
+        fields.setdefault(path, []).append(str(errors))
+    return fields
+
+
+def _join_error_path(path, key):
+    if key == "non_field_errors":
+        return path
+    return f"{path}.{key}" if path else str(key)
+
+
 def _build_bulk_validation_error_response(serializer):
     """Name the line and the field of every error: ``items.2.quantity``."""
-    fields = {}
-    for field_name, errors in serializer.errors.items():
-        if field_name != "items":
-            fields[field_name] = [str(message) for message in errors]
-        elif isinstance(errors, dict):
-            fields[field_name] = [
-                str(message) for messages in errors.values() for message in messages
-            ]
-        else:
-            for position, line_errors in enumerate(errors):
-                if not isinstance(line_errors, dict):
-                    fields.setdefault(field_name, []).append(str(line_errors))
-                    continue
-                for line_field, messages in line_errors.items():
-                    key = f"items.{position}.{line_field}"
-                    fields[key] = [str(message) for message in messages]
     response = build_error_response(
         "validation_error",
         "Перевірте введені дані.",
         status.HTTP_400_BAD_REQUEST,
     )
-    response.data["fields"] = fields
+    response.data["fields"] = flatten_error_details(serializer.errors)
     return response
 
 

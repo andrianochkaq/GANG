@@ -14,6 +14,7 @@ from apps.products.tests.factories import (
     make_item,
     make_user,
 )
+from apps.products.views import flatten_error_details
 
 pytestmark = pytest.mark.django_db
 
@@ -615,3 +616,30 @@ def test_the_fridge_list_counts_the_items(fridge, owner, dairy, milk):
 
     entry = next(item for item in response.json() if item["id"] == str(fridge.pk))
     assert entry["product_count"] == 2
+
+
+# --- the names of bulk errors ---
+
+
+def test_flatten_error_details_names_the_line_and_the_field():
+    errors = {"reason": ["Bad."], "items": [{}, {"quantity": ["Too small."]}]}
+
+    fields = flatten_error_details(errors)
+
+    assert fields == {"reason": ["Bad."], "items.1.quantity": ["Too small."]}
+
+
+def test_flatten_error_details_reads_errors_keyed_by_line():
+    errors = {"items": {"2": {"unit": ["Bad unit."]}}}
+
+    fields = flatten_error_details(errors)
+
+    assert fields == {"items.2.unit": ["Bad unit."]}
+
+
+@pytest.mark.parametrize(
+    "errors",
+    [{"items": ["Empty."]}, {"items": {"non_field_errors": ["Empty."]}}],
+)
+def test_flatten_error_details_keeps_list_errors_under_the_list_name(errors):
+    assert flatten_error_details(errors) == {"items": ["Empty."]}
