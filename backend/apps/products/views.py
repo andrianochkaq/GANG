@@ -47,6 +47,7 @@ from .services.stock import (
     update_item,
 )
 from .services.suggestions import suggest_products
+from .services.units import UnitConversionError
 from .services.use_first import list_use_first_items
 
 
@@ -220,9 +221,12 @@ class FridgeItemViewSet(GenericViewSet):
                 request.user,
                 serializer.validated_data["amount"],
                 reason=serializer.validated_data["reason"],
+                unit=serializer.validated_data.get("unit"),
             )
         except QuantityBelowZeroError as error:
             return _build_quantity_negative_response(item, error.available)
+        except UnitConversionError as error:
+            return _build_unit_conversion_response(error)
         except ItemNotFoundError:
             return _build_item_not_found_response()
         item_data = None
@@ -289,6 +293,16 @@ def _build_item_not_found_response():
         "item_not_found",
         "Цього продукту вже немає в холодильнику.",
         status.HTTP_404_NOT_FOUND,
+    )
+
+
+def _build_unit_conversion_response(error):
+    from_label = ProductUnit(error.from_unit).label
+    to_label = ProductUnit(error.to_unit).label
+    return build_error_response(
+        "unit_not_convertible",
+        f"Не вдається перевести {from_label} у {to_label} для цього продукту.",
+        status.HTTP_400_BAD_REQUEST,
     )
 
 

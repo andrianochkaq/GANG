@@ -16,6 +16,7 @@ from django.db import transaction
 
 from apps.fridges.models import Fridge
 from apps.products.models import Category, FridgeItem, StockMovement, StockReason
+from apps.products.services.units import UnitConversionError, convert_quantity
 
 OTHER_CATEGORY_SLUG = "other"
 
@@ -121,8 +122,12 @@ def update_item(item, user, *, reason=StockReason.MANUAL, **changes):
         return locked_item
 
 
-def consume_item(item, user, amount, reason=StockReason.MANUAL):
+def consume_item(item, user, amount, reason=StockReason.MANUAL, unit=None):
     """Take an amount out of an item.
+
+    ``unit`` is the unit of ``amount``; it defaults to the item's own unit
+    and any unit that converts to it is accepted (``UnitConversionError``
+    otherwise). The movement is written in the item's unit.
 
     Returns the item, or ``None`` when nothing is left and the item was
     removed. Asking for more than the item holds raises
@@ -131,6 +136,12 @@ def consume_item(item, user, amount, reason=StockReason.MANUAL):
     with transaction.atomic():
         _lock_fridge(item.fridge)
         locked_item = _lock_item(item)
+        if unit is not None:
+            amount = convert_quantity(
+                amount, unit, locked_item.unit, locked_item.catalog_product
+            )
+            if amount <= 0:
+                raise UnitConversionError(unit, locked_item.unit)
         if amount > locked_item.quantity:
             raise QuantityBelowZeroError(locked_item.quantity)
         locked_item.quantity -= amount
