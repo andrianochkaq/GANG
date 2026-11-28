@@ -138,9 +138,10 @@ class FridgeItemUpdateSerializer(serializers.Serializer):
 
 
 class FridgeItemConsumeSerializer(serializers.Serializer):
-    """How much to take out of an item."""
+    """How much to take out of an item, in any unit that converts to its own."""
 
     amount = _build_quantity_field()
+    unit = serializers.ChoiceField(choices=ProductUnit.choices, required=False)
     reason = _build_reason_field()
 
 

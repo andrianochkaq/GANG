@@ -643,3 +643,34 @@ def test_flatten_error_details_reads_errors_keyed_by_line():
 )
 def test_flatten_error_details_keeps_list_errors_under_the_list_name(errors):
     assert flatten_error_details(errors) == {"items": ["Empty."]}
+
+
+def test_consume_accepts_another_unit(fridge, owner, dairy):
+    egg = make_catalog_product(dairy, name="Яйце", unit="pcs", grams_per_piece=60)
+    eggs = make_item(
+        fridge, dairy, name="Яйця", quantity="600", unit="g", catalog_product=egg
+    )
+
+    response = client_for(owner).post(
+        consume_url(fridge, eggs), {"amount": "2", "unit": "pcs"}, format="json"
+    )
+
+    assert response.status_code == 200
+    assert Decimal(response.json()["item"]["quantity"]) == Decimal("480")
+    assert response.json()["item"]["unit"] == "g"
+
+
+def test_consume_refuses_an_impossible_conversion(fridge, owner, dairy):
+    flour = make_item(fridge, dairy, name="Борошно", quantity="600", unit="g")
+
+    response = client_for(owner).post(
+        consume_url(fridge, flour), {"amount": "2", "unit": "pcs"}, format="json"
+    )
+
+    assert response.status_code == 400
+    assert response.json()["code"] == "unit_not_convertible"
+    assert response.json()["detail"] == (
+        "Не вдається перевести шт у г для цього продукту."
+    )
+    flour.refresh_from_db()
+    assert flour.quantity == Decimal("600")

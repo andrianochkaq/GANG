@@ -13,6 +13,7 @@ written to ``StockMovement``, which outlives the item (rules live in
 """
 
 import uuid
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
@@ -94,6 +95,13 @@ class CatalogProduct(models.Model):
         null=True,
         blank=True,
         validators=[MinValueValidator(1)],
+    )
+    density_g_per_ml = models.DecimalField(
+        max_digits=5,
+        decimal_places=3,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     class Meta:

@@ -19,7 +19,7 @@ def make_category(slug="dairy", name="Молочне"):
     return Category.objects.create(slug=slug, name=name)
 
 
-def make_catalog_product(category, name="Молоко 2,5%", unit="ml"):
+def make_catalog_product(category, name="Молоко 2,5%", unit="ml", **extra):
     return CatalogProduct.objects.create(
         name=name,
         category=category,
@@ -29,6 +29,7 @@ def make_catalog_product(category, name="Молоко 2,5%", unit="ml"):
         fat_per_100g=Decimal("2.5"),
         carbs_per_100g=Decimal("4.8"),
         default_shelf_days=7,
+        **extra,
     )
 
 
