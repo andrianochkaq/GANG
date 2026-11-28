@@ -148,6 +148,12 @@ class FridgeItemBulkResponseSerializer(serializers.Serializer):
     items = FridgeItemSerializer(many=True)
 
 
+class UseFirstListSerializer(serializers.Serializer):
+    """Up to 50 items, the most urgent first."""
+
+    items = FridgeItemSerializer(many=True)
+
+
 class FridgeItemConsumeResponseSerializer(serializers.Serializer):
     """The item after the change; empty when it was used up and removed."""
 
