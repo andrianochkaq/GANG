@@ -1,4 +1,4 @@
-"""The fridge items API: list, add, change, remove, consume and suggest.
+"""The fridge items API: list, add, change, remove, consume, suggest, use first.
 
 Everything lives under ``/api/fridges/<fridge_id>/items/`` and is open to
 the active members of that fridge only; anybody else gets 404
@@ -33,6 +33,7 @@ from .serializers import (
     ProductSuggestionListSerializer,
     ProductSuggestionQuerySerializer,
     ProductSuggestionSerializer,
+    UseFirstListSerializer,
 )
 from .services.stock import (
     CategoryRequiredError,
@@ -46,6 +47,7 @@ from .services.stock import (
     update_item,
 )
 from .services.suggestions import suggest_products
+from .services.use_first import list_use_first_items
 
 
 class FridgeItemViewSet(GenericViewSet):
@@ -153,6 +155,15 @@ class FridgeItemViewSet(GenericViewSet):
         found = suggest_products(fridge_id, serializer.validated_data["q"])
         data = ProductSuggestionSerializer(found, many=True).data
         return Response({"suggestions": data})
+
+    @extend_schema(
+        responses={200: UseFirstListSerializer, 404: ApiErrorSerializer},
+        summary="Items to use first: expired, expiring soon, opened, oldest",
+    )
+    @action(detail=False, methods=["get"], url_path="use-first")
+    def use_first(self, request, fridge_id):
+        found = list_use_first_items(self.get_queryset())
+        return Response({"items": FridgeItemSerializer(found, many=True).data})
 
     @extend_schema(
         request=FridgeItemUpdateSerializer,
