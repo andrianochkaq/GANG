@@ -1,8 +1,10 @@
 """Fridge rules that more than one place needs."""
 
 from django.db import transaction
-from django.db.models import Count, IntegerField, OuterRef, Subquery, Value
+from django.db.models import Count, IntegerField, OuterRef, Subquery
 from django.db.models.functions import Coalesce
+
+from apps.products.models import FridgeItem
 
 from .models import Fridge, FridgeMembership, FridgeRole, MembershipStatus
 
@@ -42,8 +44,9 @@ class OwnerCannotLeaveError(Exception):
 def annotate_fridge_summary(fridges):
     """Add ``member_count`` and ``product_count`` to a queryset of fridges.
 
-    The members are counted in a subquery, because a filter on the same
-    relation (``visible_to``) would otherwise leave only the caller's row.
+    The members and the items are counted in subqueries, because a filter on
+    the same relation (``visible_to``) would otherwise leave only the
+    caller's row.
     """
     active_members = (
         FridgeMembership.objects.filter(
@@ -55,15 +58,24 @@ def annotate_fridge_summary(fridges):
         .annotate(total=Count("pk"))
         .values("total")
     )
+    items = (
+        FridgeItem.objects.filter(fridge=OuterRef("pk"))
+        .order_by()
+        .values("fridge")
+        .annotate(total=Count("pk"))
+        .values("total")
+    )
     return fridges.annotate(
         member_count=Coalesce(
             Subquery(active_members),
             0,
             output_field=IntegerField(),
         ),
-        # Products arrive with the FridgeItem model of the products app;
-        # count them here once it exists.
-        product_count=Value(0, output_field=IntegerField()),
+        product_count=Coalesce(
+            Subquery(items),
+            0,
+            output_field=IntegerField(),
+        ),
     )
 
 
