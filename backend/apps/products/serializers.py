@@ -5,6 +5,7 @@ from decimal import Decimal
 from rest_framework import serializers
 
 from .models import CatalogProduct, Category, FridgeItem, ProductUnit, StockReason
+from .services.suggestions import SuggestionSource
 
 NAME_MAX_LENGTH = 120
 MIN_QUANTITY = Decimal("0.001")
@@ -152,3 +153,31 @@ class FridgeItemConsumeResponseSerializer(serializers.Serializer):
 
     removed = serializers.BooleanField()
     item = FridgeItemSerializer(allow_null=True)
+
+
+class ProductSuggestionQuerySerializer(serializers.Serializer):
+    """The text typed so far; no text gives no suggestions."""
+
+    q = serializers.CharField(
+        max_length=NAME_MAX_LENGTH,
+        allow_blank=True,
+        default="",
+    )
+
+
+class ProductSuggestionSerializer(serializers.Serializer):
+    """One name offered while typing.
+
+    ``source`` says whether the fridge already has it. ``unit``, ``category``
+    (a slug) and ``catalog_product`` are what the add request needs.
+    """
+
+    source = serializers.ChoiceField(choices=SuggestionSource.choices)
+    name = serializers.CharField()
+    unit = serializers.ChoiceField(choices=ProductUnit.choices)
+    category = serializers.CharField()
+    catalog_product = serializers.UUIDField(allow_null=True)
+
+
+class ProductSuggestionListSerializer(serializers.Serializer):
+    suggestions = ProductSuggestionSerializer(many=True)

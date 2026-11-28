@@ -1,8 +1,9 @@
-"""The fridge items API: list, add, change, remove and consume.
+"""The fridge items API: list, add, change, remove, consume and suggest.
 
 Everything lives under ``/api/fridges/<fridge_id>/items/`` and is open to
 the active members of that fridge only; anybody else gets 404
-(``IsFridgeMember``). The rules are in ``services/stock.py``.
+(``IsFridgeMember``). The rules are in ``services/stock.py``; suggestions
+are found by ``services/suggestions.py``.
 """
 
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -29,6 +30,9 @@ from .serializers import (
     FridgeItemCreateSerializer,
     FridgeItemSerializer,
     FridgeItemUpdateSerializer,
+    ProductSuggestionListSerializer,
+    ProductSuggestionQuerySerializer,
+    ProductSuggestionSerializer,
 )
 from .services.stock import (
     CategoryRequiredError,
@@ -41,6 +45,7 @@ from .services.stock import (
     filter_items,
     update_item,
 )
+from .services.suggestions import suggest_products
 
 
 class FridgeItemViewSet(GenericViewSet):
@@ -132,6 +137,22 @@ class FridgeItemViewSet(GenericViewSet):
             return _build_category_required_response()
         items = FridgeItemSerializer([entry.item for entry in added], many=True)
         return Response({"items": items.data}, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("q", str, description="Text typed so far, up to 120"),
+        ],
+        responses={200: ProductSuggestionListSerializer, 400: ApiErrorSerializer},
+        summary="Suggest up to 8 products while the person types",
+    )
+    @action(detail=False, methods=["get"], url_path="suggestions")
+    def suggestions(self, request, fridge_id):
+        serializer = ProductSuggestionQuerySerializer(data=request.query_params)
+        if not serializer.is_valid():
+            return build_validation_error_response(serializer)
+        found = suggest_products(fridge_id, serializer.validated_data["q"])
+        data = ProductSuggestionSerializer(found, many=True).data
+        return Response({"suggestions": data})
 
     @extend_schema(
         request=FridgeItemUpdateSerializer,
