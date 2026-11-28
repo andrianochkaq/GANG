@@ -23,9 +23,7 @@ def category():
 
 @pytest.fixture
 def egg(category):
-    return make_catalog_product(
-        category, name="Яйце", unit="pcs", grams_per_piece=60
-    )
+    return make_catalog_product(category, name="Яйце", unit="pcs", grams_per_piece=60)
 
 
 @pytest.fixture
@@ -114,9 +112,7 @@ def fridge(user):
     return create_fridge(user, "Дача")
 
 
-def test_writing_off_pieces_subtracts_the_catalog_weight(
-    fridge, user, category, egg
-):
+def test_writing_off_pieces_subtracts_the_catalog_weight(fridge, user, category, egg):
     item = make_item(
         fridge, category, name="Яйця", quantity="600", unit="g", catalog_product=egg
     )
