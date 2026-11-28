@@ -41,6 +41,10 @@ def convert_quantity(amount, from_unit, to_unit, catalog_product=None):
     """Return ``amount`` of ``from_unit`` expressed in ``to_unit``."""
     if from_unit == to_unit:
         return amount
+    for factors in (_GRAMS_PER_UNIT, _MILLILITERS_PER_UNIT):
+        if from_unit in factors and to_unit in factors:
+            result = amount * factors[from_unit] / factors[to_unit]
+            return result.quantize(QUANTITY_STEP, rounding=ROUND_HALF_UP)
     grams = _to_grams(amount, from_unit, to_unit, catalog_product)
     result = _from_grams(grams, from_unit, to_unit, catalog_product)
     return result.quantize(QUANTITY_STEP, rounding=ROUND_HALF_UP)
